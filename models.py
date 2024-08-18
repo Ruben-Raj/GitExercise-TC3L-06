@@ -1,3 +1,4 @@
+fa
 from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy.ext.declarative import as_declarative
@@ -5,7 +6,7 @@ from sqlalchemy.ext.declarative import as_declarative
 # Define the base class for our models
 Base = declarative_base()
 
-# Define the User model
+# Define the User model 
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
