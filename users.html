@@ -3,7 +3,6 @@
 
 <head>
 <title>Users Login Form</title>
-<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -12,16 +11,16 @@
     <h3>Log in</h3>
     <form action="">
         <label for="first"> Username: </label>
-        <input type="text">
-        <input name="first">
-        <input id="first">
-        <input placeholder="Enter your Username">
+        <input type="text"
+               name="first"
+               id="first"
+               placeholder="Enter your Username" required>
 
         <label for="password"> Password: </label>
-        <input type="password">
-        <input name="password">
-        <input id="password">
-        <input placeholder="Enter your password">
+        <input type="password"
+               name="password"
+               id="password"
+               placeholder="Enter your password" required>
 
         <div class="wrap">
             <button type="submit" onclick="solve()">
@@ -31,8 +30,7 @@
     </form>
     <p> Don't have an account?
         <a href="#top">
-            <a style="text-decoration:none;"></a>
-            Create an account
+           Create an account
         </a>
         
 
