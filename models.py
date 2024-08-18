@@ -1,4 +1,3 @@
-fa
 from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy.ext.declarative import as_declarative
