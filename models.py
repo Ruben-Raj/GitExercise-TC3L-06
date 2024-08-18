@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy.ext.declarative import as_declarative
 
 # Define the base class for our models
-Base = declarative_base()
+Base = declarative_base() 
 
 # Define the User model 
 class User(Base):
