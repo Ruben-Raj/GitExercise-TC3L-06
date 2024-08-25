@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMU HUB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='qna_styles.css') }}">
+</head>
+<body>
+    <div class="banner">
+        <div class="navbar">
+            <h1>MMU UNIVERSITY STUDENT HUB & TUTORIAL WEBSITE</h1>
+            <ul>
+                <li><a href="#">TUTORIAL FORUM</a></li>
+                <li><a href="#">TOP QUESTIONS</a></li>
+            </ul>
+        </div>
+        <div class="question-form">
+            <h2>Post a New Question</h2>
+            <form action="/submit-question" method="POST">
+                <textarea name="question" placeholder="Type your question here..." required></textarea>
+                <button type="submit" class="button">Post Question</button>
+            </form>
+        </div>
+        {% for question in questions %}
+        <div class="question">
+            <h3>{{ question.content }}</h3>
+            <p>Posted by: <strong>Anonymous</strong></p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
