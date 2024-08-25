@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MMU HUB</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='qna_styles.css') }}">
 </head>
@@ -22,12 +20,14 @@
                 <button type="submit" class="button">Post Question</button>
             </form>
         </div>
+        
         {% for question in questions %}
         <div class="question">
             <h3>{{ question.content }}</h3>
             <p>Posted by: <strong>Anonymous</strong></p>
         </div>
         {% endfor %}
+        
     </div>
 </body>
 </html>
