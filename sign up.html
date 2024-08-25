@@ -2,25 +2,27 @@
 <html>
 
 <head>
-<title>Users Login Form</title>
+<title>Users Sign up Form</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
  <div class="main">
+    <img src="MMU logo.jpg" alt="MMU logo">
     <h1>Multimedia University Student Hub</h1>
-    <h3>Log in</h3>
+    <h3>Sign Up</h3>
     <form action="">
         <label for="first"> Username: </label>
         <input type="text"
                name="first"
                id="first"
-               placeholder="Enter your Username" required>
+               placeholder="Create a Username" required>
 
         <label for="password"> Password: </label>
         <input type="password"
                name="password"
                id="password"
-               placeholder="Enter your password" required>
+               placeholder="Create a password" required>
 
         <div class="wrap">
             <button type="submit" onclick="solve()">
@@ -28,9 +30,10 @@
             </button>
         </div>
     </form>
-    <p> Don't have an account?
-        <a href="#top">
-           Create an account
+    <p> Already have an account?
+        <a href="login.html"
+        style="text-decoration: none;">
+           Log in
         </a>
         
 
