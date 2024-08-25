@@ -10,6 +10,13 @@ body {
     margin: 0;
 }
 
+img {
+    padding: 5px;
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
 .main {
     background-color: #fff;
     border-radius: 15px;
