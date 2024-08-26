@@ -11,7 +11,7 @@
     <img src="C:\Users\ibrahim\Desktop\Projects\GitExercise-TC3L-06\static\MMU logo.jpg" alt="MMU logo">
     <h1>Multimedia University Student Hub</h1>
     <h3>Sign Up</h3>
-    <form action="">
+    <form action="{{ url_for('register') }}" method="post" autocomplete="off">
         <label for="first"> Username: </label>
         <input type="text"
                name="first"
@@ -29,14 +29,14 @@
                name="password"
                id="password"
                placeholder="Create a password" required>
+        
+        <div class="wrap">
+            <button type="submit" onclick="solve()">
+                Submit
+            </button>
+        </div>
      
     </form>
-
-    <a href="C:\Users\ibrahim\Desktop\Projects\GitExercise-TC3L-06\templates\home.html">
-        <button type="submit" onclick="solve()">
-            Submit
-        </button>
-    </a>
 
     <p> Already have an account?
         <a href="login.html"
