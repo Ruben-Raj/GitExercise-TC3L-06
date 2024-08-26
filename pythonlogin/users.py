@@ -33,4 +33,4 @@ def login():
             return 'Logged in successfully!'
         else:
             msg = 'Incorrect username/password!'
-    return render_template('index.html', msg=msg)
+    return render_template('login.html', msg=msg)
