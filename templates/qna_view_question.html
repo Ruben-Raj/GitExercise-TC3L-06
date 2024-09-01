@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ question.content }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='qna_styles.css') }}">
+</head>
+<body>
+    <div class="banner">
+        <div class="navbar">
+            <h1>MMU UNIVERSITY STUDENT HUB & TUTORIAL WEBSITE</h1>
+            <ul>
+                <li><a href="#">TUTORIAL FORUM</a></li>
+                <li><a href="#">TOP QUESTIONS</a></li>
+            </ul>
+        </div>
+        
+        <div class="question">
+            <h3>{{ question.content }}</h3>
+            <p>Posted by: <strong>Anonymous</strong></p>
+        </div>
+        
+        
+        <div class="answer-form">
+            <h2>Submit Your Answer</h2>
+            <form action="{{ url_for('view_question', question_id=question.id) }}" method="POST">
+                <textarea name="answer" placeholder="Type your answer here..." required></textarea>
+                <button type="submit" class="button">Submit Answer</button>
+            </form>
+        </div>
+
+        
+        <div class="answers">
+            <h2>Answers</h2>
+            {% for answer in question.answers %}
+            <div class="answer">
+                <p>{{ answer.content }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

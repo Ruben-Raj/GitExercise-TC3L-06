@@ -23,7 +23,7 @@
         
         {% for question in questions %}
         <div class="question">
-            <h3>{{ question.content }}</h3>
+            <h3><a href="{{ url_for('view_question', question_id=question.id) }}">{{ question.content }}</a></h3>
             <p>Posted by: <strong>Anonymous</strong></p>
         </div>
         {% endfor %}
