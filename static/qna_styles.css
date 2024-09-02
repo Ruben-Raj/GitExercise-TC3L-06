@@ -121,10 +121,10 @@
 }
 
 .question a {
-    text-decoration: none; /* Removes the underline */
-    color: #333; /* Sets the text color to a neutral color */
+    text-decoration: none; 
+    color: #333; 
 }
 
 .question a:hover {
-    color: #007bff; /* Optional: Change color on hover to indicate it’s clickable */
+    color: #007bff; 
 }
