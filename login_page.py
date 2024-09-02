@@ -9,8 +9,6 @@ class login_page:
     def __init__(self, root):
         self.window = root
         self.window.title("Log In MMU")
-        # Set the window size
-        # Here 0,0 represents the starting point of the window 
         self.window.geometry("1280x800+0+0")
         self.window.config(bg = "white")
 
@@ -22,7 +20,7 @@ class login_page:
         label1 = Label(self.frame1, text= "MMU", font=("times new roman", 40, "bold"), bg="white", fg="red").place(x=100,y=300)
         label2 = Label(self.frame1, text= "Student Hub", font=("times new roman", 40, "bold"), bg="white", fg="blue").place(x=100,y=360)
 
-        #=============Entry Field & Buttons============
+        
 
         self.frame2 = Frame(self.window, bg = "gray95")
         self.frame2.place(x=450,y=0,relwidth=1, relheight=1)
@@ -38,7 +36,7 @@ class login_page:
         self.password_entry = Entry(self.frame3,font=("times new roman",15,"bold"),bg="white",fg="gray",show="*")
         self.password_entry.place(x=50, y=160, width=300)
 
-        #================Buttons===================
+        
         self.login_button = Button(self.frame3,text="Log In",command=self.login_func,font=("times new roman",15, "bold"),bd=0,cursor="hand2",bg="blue",fg="white").place(x=50,y=200,width=300)
 
         self.forgotten_pass = Button(self.frame3,text="Forgot your password?",command=self.forgot_func,font=("times new roman",10, "bold"),bd=0,cursor="hand2",bg="white",fg="blue").place(x=125,y=260,width=150)
@@ -59,7 +57,7 @@ class login_page:
                     messagebox.showerror("Error!","Invalid USERNAME & PASSWORD",parent=self.window)
                 else:
                     messagebox.showinfo("Success","Login Successful",parent=self.window)
-                    # Clear all the entries
+                    
                     self.reset_fields()
                     
                     connection.close()
@@ -81,10 +79,7 @@ class login_page:
                 else:
                     connection.close()
                     
-                    #=========================SECOND WINDOW===============================
-                    #------------Toplevel:create a window top of another window-----------
-                    #------------focus_force:Helps to to focus on the current window------
-                    #-----Grab:Helps to grab the current window until user ungrab it------
+                    
 
                     self.root=Toplevel()
                     self.root.title("Forget Password?")
@@ -115,7 +110,7 @@ class login_page:
                     self.new_pass.place(x=10,y=270,width=270)
 
                     self.create_button = Button(self.root,text="Submit",command=self.change_pass,font=("times new roman",18, "bold"),bd=0,cursor="hand2",bg="green2",fg="white").place(x=95,y=340,width=200)
-                    #=========================================================================
+                    
 
             except Exception as e:
                 messagebox.showerror("Error", f"{e}")
@@ -152,8 +147,7 @@ class login_page:
 
     def redirect_window(self):
         self.window.destroy()
-        # Importing the signup window.
-        # The page must be in the same directory
+        
         root = Tk()
         obj = SignUp(root)
         root.mainloop()
@@ -161,7 +155,7 @@ class login_page:
     def reset_fields(self):
         self.email_entry.delete(0,END)
         self.password_entry.delete(0,END)
-# The main function
+
 if __name__ == "__main__":
     root = Tk()
     obj = login_page(root)
