@@ -11,8 +11,8 @@ class SignUp:
         self.window.geometry("1280x800+0+0")
         self.window.config(bg = "white")
 
-        self.bg_img = ImageTk.PhotoImage(file="Images/photo1.jpeg")
-        background = Label(self.window,image=self.bg_img).place(x=0,y=0,relwidth=1,relheight=1)
+        self.bg_img = ImageTk.PhotoImage(file="Images\mmu_campus.jpg")
+        background = Label(self.window,image=self.bg_img).place(x=0,y=0,relwidth=1,relheight=1,)
 
 
         frame = Frame(self.window, bg="white")
@@ -53,7 +53,7 @@ class SignUp:
 
         self.terms = IntVar()
         terms_and_con = Checkbutton(frame,text="I Agree The Terms & Conditions",variable=self.terms,onvalue=1,offvalue=0,bg="white",font=("times new roman",12)).place(x=20,y=420)
-        self.signup = Button(frame,text="Sign Up",command=self.signup_func,font=("times new roman",18, "bold"),bd=0,cursor="hand2",bg="green2",fg="white").place(x=120,y=470,width=250)
+        self.signup = Button(frame,text="Sign Up",command=self.signup_func,font=("times new roman",18, "bold"),bd=0,cursor="hand2",bg="blue",fg="white").place(x=120,y=470,width=250)
 
     def signup_func(self):
         if self.fname_txt.get()=="" or self.lname_txt.get()=="" or self.email_txt.get()=="" or self.questions.get()=="Select" or self.answer_txt.get()=="" or self.password_txt.get() == "":
@@ -69,7 +69,7 @@ class SignUp:
                 cur.execute("select * from student_register where email=%s",self.email_txt.get())
                 row=cur.fetchone()
 
-                # Check if th entered email id is already exists or not.
+                
                 if row!=None:
                     messagebox.showerror("Error!","The email id is already exists, please try again with another email id",parent=self.window)
                 else:

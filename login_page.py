@@ -8,22 +8,19 @@ import credentials as cr
 class login_page:
     def __init__(self, root):
         self.window = root
-        self.window.title("Log In PySeek")
+        self.window.title("Log In MMU")
         # Set the window size
         # Here 0,0 represents the starting point of the window 
         self.window.geometry("1280x800+0+0")
         self.window.config(bg = "white")
 
-        #============================================================================
-        #==============================DESIGN PART===================================
-        #============================================================================
+       
 
-        self.frame1 = Frame(self.window, bg="yellow")
+        self.frame1 = Frame(self.window, bg="white")
         self.frame1.place(x=0, y=0, width=450, relheight = 1)
 
-        label1 = Label(self.frame1, text= "Py", font=("times new roman", 40, "bold"), bg="yellow", fg="red").place(x=100,y=300)
-        label2 = Label(self.frame1, text= "Seek", font=("times new roman", 40, "bold"), bg="yellow", fg="RoyalBlue1").place(x=162,y=300)
-        label3 = Label(self.frame1, text= "It's all about Python", font=("times new roman", 13, "bold"), bg="yellow", fg="brown4").place(x=100,y=360)
+        label1 = Label(self.frame1, text= "MMU", font=("times new roman", 40, "bold"), bg="white", fg="red").place(x=100,y=300)
+        label2 = Label(self.frame1, text= "Student Hub", font=("times new roman", 40, "bold"), bg="white", fg="blue").place(x=100,y=360)
 
         #=============Entry Field & Buttons============
 
@@ -44,9 +41,9 @@ class login_page:
         #================Buttons===================
         self.login_button = Button(self.frame3,text="Log In",command=self.login_func,font=("times new roman",15, "bold"),bd=0,cursor="hand2",bg="blue",fg="white").place(x=50,y=200,width=300)
 
-        self.forgotten_pass = Button(self.frame3,text="Forgotten password?",command=self.forgot_func,font=("times new roman",10, "bold"),bd=0,cursor="hand2",bg="white",fg="blue").place(x=125,y=260,width=150)
+        self.forgotten_pass = Button(self.frame3,text="Forgot your password?",command=self.forgot_func,font=("times new roman",10, "bold"),bd=0,cursor="hand2",bg="white",fg="blue").place(x=125,y=260,width=150)
 
-        self.create_button = Button(self.frame3,text="Create New Account",command=self.redirect_window,font=("times new roman",18, "bold"),bd=0,cursor="hand2",bg="green2",fg="white").place(x=80,y=320,width=250)
+        self.create_button = Button(self.frame3,text="Create New Account",command=self.redirect_window,font=("times new roman",18, "bold"),bd=0,cursor="hand2",bg="red",fg="white").place(x=80,y=320,width=250)
 
 
     def login_func(self):
@@ -129,7 +126,7 @@ class login_page:
             messagebox.showerror("Error!", "Please fill the all entry field correctly")
         else:
             try:
-                connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
+                connection = pymysql.connect(host="localhost", user="root", password="Ahmed178!", database="student_database")
                 cur = connection.cursor()
                 cur.execute("select * from student_register where email=%s and question=%s and answer=%s", (self.email_entry.get(),self.sec_ques.get(),self.ans.get()))
                 row=cur.fetchone()
