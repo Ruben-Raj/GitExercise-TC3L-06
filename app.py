@@ -12,6 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
@@ -21,6 +22,7 @@ class Answer(db.Model):
     content = db.Column(db.Text, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     question = db.relationship('Question', backref=db.backref('answers', lazy=True))
+    upvotes = db.Column(db.Integer, default=0)
 
 with app.app_context():
     db.create_all()
@@ -50,6 +52,34 @@ def view_question(question_id):
         return redirect(url_for('view_question', question_id=question.id))
     
     return render_template('qna_view_question.html', question=question)
+
+@app.route('/upvote/<int:answer_id>', methods=['POST'])
+def upvote_answer(answer_id):
+    answer = Answer.query.get_or_404(answer_id)
+    answer.upvotes += 1
+    db.session.commit()
+    return redirect(url_for('view_question', question_id=answer.question_id))
+
+@app.route('/delete-answer/<int:answer_id>', methods=['POST'])
+def delete_answer(answer_id):
+    answer = Answer.query.get_or_404(answer_id)
+    db.session.delete(answer)
+    db.session.commit()
+    return redirect(url_for('view_question', question_id=answer.question_id))
+
+@app.route('/delete-question/<int:question_id>', methods=['POST'])
+def delete_question(question_id):
+    question = Question.query.get_or_404(question_id)
+    db.session.delete(question)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+@app.route('/search', methods=['GET'])
+def search_questions():
+    query = request.args.get('query')
+    questions = Question.query.filter(Question.content.like(f'%{query}%')).all()
+    return render_template('qna_question.html', questions=questions)
+
 
 
 if __name__ == '__main__':
