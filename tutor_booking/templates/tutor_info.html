@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tutor.name }} - Info</title>
+</head>
+<body>
+    <h1>{{ tutor.name }}</h1>
+    <p>Phone: {{ tutor.phone }}</p>
+    <p>Subject: {{ tutor.subject }}</p>
+    <p>Available Slots: {{ tutor.available_slots }}</p>
+    <a href="{{ url_for('book_slot', tutor_id=tutor.id) }}">Book a Slot</a>
+</body>
+</html>

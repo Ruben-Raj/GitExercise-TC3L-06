@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Bookings</title>
+</head>
+<body>
+    <h1>View Bookings</h1>
+    
+    {% if bookings %}
+        <table>
+            <tr>
+                <th>Student Name</th>
+                <th>Slot</th>
+                <th>Tutor</th>
+                <th>Action</th>
+            </tr>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.student_name }}</td>
+                <td>{{ booking.slot }}</td>
+                <td>{{ booking.tutor.name }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
+                        <button type="submit">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+</body>
+</html>
