@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Tutor</title>
+</head>
+<body>
+    <h1>Add/Update Tutor</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.name.label }} {{ form.name(size=20) }}</p>
+        <p>{{ form.phone.label }} {{ form.phone(size=20) }}</p>
+        <p>{{ form.subject.label }} {{ form.subject(size=20) }}</p>
+        <p>{{ form.available_slots.label }} {{ form.available_slots(size=20) }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>
