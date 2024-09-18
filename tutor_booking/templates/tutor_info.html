@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ tutor.name }} - Info</title>
+    <title>{{ tutor.name }}'s Information</title>
 </head>
 <body>
     <h1>{{ tutor.name }}</h1>
     <p>Phone: {{ tutor.phone }}</p>
     <p>Subject: {{ tutor.subject }}</p>
     <p>Available Slots: {{ tutor.available_slots }}</p>
+
     <a href="{{ url_for('book_slot', tutor_id=tutor.id) }}">Book a Slot</a>
+    <a href="{{ url_for('tutor_bookings', tutor_id=tutor.id) }}">View Bookings</a>
+    <a href="{{ url_for('home') }}">Back to Home</a>
 </body>
 </html>

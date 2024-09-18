@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tutor.name }}'s Bookings</title>
+</head>
+<body>
+    <h1>{{ tutor.name }}'s Bookings</h1>
+    
+    {% if bookings %}
+        <table>
+            <tr>
+                <th>Student Name</th>
+                <th>Slot</th>
+            </tr>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.student_name }}</td>
+                <td>{{ booking.slot }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+    
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

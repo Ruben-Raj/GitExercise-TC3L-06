@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-app = Flask(__name__)  # Make sure 'app' is defined first
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutors.db'
 db = SQLAlchemy(app)
@@ -107,8 +107,17 @@ def view_bookings():
     bookings = Booking.query.all()
     return render_template('view_bookings.html', bookings=bookings)
 
+@app.route('/tutor/bookings/<int:tutor_id>')
+def tutor_bookings(tutor_id):
+    tutor = Tutor.query.get_or_404(tutor_id)
+    bookings = Booking.query.filter_by(tutor_id=tutor_id).all()
+    return render_template('tutor_bookings.html', tutor=tutor, bookings=bookings)
+
 if __name__ == '__main__':
-    # Ensure app is defined before entering the context
     with app.app_context():
-        db.create_all()  # This line creates the database tables
-   
+        try:
+            db.create_all()
+            print("Database tables created successfully.")
+        except Exception as e:
+            print(f"Error creating database tables: {e}")
+    app.run(debug=True)
