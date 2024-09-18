@@ -2,15 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tutor Booking</title>
+    <title>Tutors</title>
 </head>
 <body>
-    <h1>Tutor List</h1>
-    <ul>
-        {% for tutor in tutors %}
-        <li><a href="{{ url_for('tutor_info', tutor_id=tutor.id) }}">{{ tutor.name }} ({{ tutor.subject }})</a></li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('add_tutor') }}">Add/Update Tutor Information</a>
+    <h1>Tutors</h1>
+    
+    <form method="GET" action="{{ url_for('home') }}">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search by subject...">
+        <input type="submit" value="Search">
+    </form>
+    
+    {% if tutors %}
+        <ul>
+            {% for tutor in tutors %}
+            <li>
+                <a href="{{ url_for('tutor_info', tutor_id=tutor.id) }}">{{ tutor.name }}</a> - {{ tutor.subject }}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tutors found.</p>
+    {% endif %}
+    
+    <a href="{{ url_for('add_tutor') }}">Add Tutor</a>
+    <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
 </body>
 </html>

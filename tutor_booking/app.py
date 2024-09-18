@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -41,8 +41,12 @@ class BookingForm(FlaskForm):
 
 @app.route('/')
 def home():
-    tutors = Tutor.query.all()
-    return render_template('home.html', tutors=tutors)
+    search_query = request.args.get('search', '')
+    if search_query:
+        tutors = Tutor.query.filter(Tutor.subject.ilike(f'%{search_query}%')).all()
+    else:
+        tutors = Tutor.query.all()
+    return render_template('home.html', tutors=tutors, search_query=search_query)
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
