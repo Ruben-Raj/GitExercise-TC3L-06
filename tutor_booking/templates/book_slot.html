@@ -3,24 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Book Slot with {{ tutor.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Book Slot with {{ tutor.name }}</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>{{ form.student_name.label }} {{ form.student_name(size=20) }}</p>
-        <p>{{ form.slot.label }} {{ form.slot(size=20) }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
+    <header>
+        <h1>Book Slot with {{ tutor.name }}</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
+        </nav>
+    </header>
     
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
+    <main>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <p>{{ form.student_name.label }} {{ form.student_name(size=20) }}</p>
+            <p>Select a slot:</p>
             <ul>
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
+                {% for slot in tutor.available_slots.split(',') %}
+                <li>
+                    <input type="radio" id="{{ slot }}" name="slot" value="{{ slot }}">
+                    <label for="{{ slot }}">{{ slot }}</label>
+                </li>
                 {% endfor %}
             </ul>
-        {% endif %}
-    {% endwith %}
+            <p>{{ form.submit() }}</p>
+        </form>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </main>
 </body>
 </html>

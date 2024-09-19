@@ -3,33 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Tutor Booking</title>
-    <style>
-        /* Optional: Add some basic styling */
-        .search-form {
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Tutor List</h1>
+    <header>
+        <h1>Tutor List</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
+        </nav>
+    </header>
     
-    <!-- Search Form -->
-    <form method="GET" action="{{ url_for('home') }}" class="search-form">
-        <label for="subject">Search Tutors by Subject:</label>
-        <input type="text" id="subject" name="subject" placeholder="Enter subject" value="{{ request.args.get('subject', '') }}">
-        <button type="submit">Search</button>
-    </form>
-    
-    <!-- Tutors List -->
-    <ul>
-        {% for tutor in tutors %}
-        <li><a href="{{ url_for('tutor_info', tutor_id=tutor.id) }}">{{ tutor.name }} ({{ tutor.subject }})</a></li>
-        {% else %}
-        <li>No tutors found.</li>
-        {% endfor %}
-    </ul>
-    
-    <a href="{{ url_for('add_tutor') }}">Add/Update Tutor Information</a>
-    <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
+    <main>
+        <form method="GET" action="{{ url_for('home') }}">
+            <input type="text" name="search" placeholder="Search tutors" value="{{ request.args.get('search', '') }}">
+            <button type="submit">Search</button>
+        </form>
+        
+        <ul>
+            {% for tutor in tutors %}
+            <li>
+                <a href="{{ url_for('tutor_info', tutor_id=tutor.id) }}">{{ tutor.name }} ({{ tutor.subject }})</a>
+                <a href="{{ url_for('edit_tutor', tutor_id=tutor.id) }}">Edit</a>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <a href="{{ url_for('add_tutor') }}">Add/Update Tutor Information</a>
+    </main>
 </body>
 </html>

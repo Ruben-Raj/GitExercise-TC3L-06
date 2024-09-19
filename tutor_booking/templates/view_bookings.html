@@ -2,63 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Bookings</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        button {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: darkred;
-        }
-    </style>
+    <title>View All Bookings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>View Bookings</h1>
+    <header>
+        <h1>All Bookings</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
+        </nav>
+    </header>
     
-    {% if bookings %}
+    <main>
         <table>
-            <tr>
-                <th>Student Name</th>
-                <th>Slot</th>
-                <th>Tutor</th>
-                <th>Action</th>
-            </tr>
-            {% for booking in bookings %}
-            <tr>
-                <td>{{ booking.student_name }}</td>
-                <td>{{ booking.slot }}</td>
-                <td>{{ booking.tutor.name }}</td>
-                <td>
-                    {% if session.get('student_name') == booking.student_name %}
-                    <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                        <button type="submit">Cancel</button>
-                    </form>
-                    {% else %}
-                    <span>Not Your Booking</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Slot</th>
+                    <th>Tutor</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.student_name }}</td>
+                    <td>{{ booking.slot }}</td>
+                    <td>{{ booking.tutor.name }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
+                            <button type="submit">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
-    {% else %}
-        <p>No bookings found.</p>
-    {% endif %}
+    </main>
 </body>
 </html>
