@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ tutor.name }} - Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>{{ tutor.name }}</h1>
+    <header>
+        <h1>{{ tutor.name }}</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+    </nav>
     <p>Phone: {{ tutor.phone }}</p>
     <p>Subject: {{ tutor.subject }}</p>
     <p>Available Slots: {{ tutor.available_slots }}</p>

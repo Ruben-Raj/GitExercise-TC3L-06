@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Tutor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Add/Update Tutor</h1>
+    <header>
+        <h1>Add/Update Tutor</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+    </nav>
     <form method="POST">
         {{ form.hidden_tag() }}
         <p>{{ form.name.label }} {{ form.name(size=20) }}</p>
