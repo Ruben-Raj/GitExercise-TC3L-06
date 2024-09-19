@@ -189,7 +189,7 @@
     background-color: #0056b3;
 }
 .edit-btn {
-    background-color: #007bff; /* Same as the button color */
+    background-color: #007bff; 
     color: white;
     border: none;
     padding: 8px 12px;
@@ -201,7 +201,7 @@
 }
 
 .edit-btn:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #0056b3; 
 }
 
 .edit-form {
@@ -210,12 +210,12 @@
     margin: 20px auto;
     border-radius: 5px;
     background-color: #f9f9f9;
-    width: 80%; /* Adjust width as needed */
+    width: 80%; 
 }
 
 .edit-form textarea {
     width: 100%;
-    height: 150px; /* Increased height for editing */
+    height: 150px; 
     margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -226,7 +226,7 @@
 .edit-form .button {
     padding: 10px 20px;
     color: #fff;
-    background-color: #007bff; /* Consistent with other buttons */
+    background-color: #007bff; 
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -234,5 +234,30 @@
 }
 
 .edit-form .button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #0056b3; 
+}
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    color: #337ab7;
+    text-decoration: none;
+    border-radius: 5px; 
+    transition: background-color 0.3s; 
+}
+
+.pagination a:hover {
+    background-color: #f2f2f2; 
+}
+
+.pagination span {
+    padding: 10px 15px;
+    margin: 5px;
+    color: #555;
+    font-weight: bold;
 }

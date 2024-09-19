@@ -12,7 +12,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
@@ -27,10 +26,13 @@ class Answer(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/')
-def index():
-    questions = Question.query.all()  
+@app.route('/', defaults={'page': 1})
+@app.route('/page/<int:page>')
+def index(page):
+    per_page = 2 
+    questions = Question.query.paginate(page=page, per_page=per_page)
     return render_template('qna_question.html', questions=questions)
+
 
 @app.route('/submit-question', methods=['POST'])
 def submit_question():
@@ -94,12 +96,9 @@ def edit_question(question_id):
 @app.route('/edit-answer/<int:answer_id>', methods=['POST'])
 def edit_answer(answer_id):
     answer = Answer.query.get_or_404(answer_id)
-    answer.content = request.form['answer']  # Update the answer content
-    db.session.commit()  # Commit the changes to the database
+    answer.content = request.form['answer']
+    db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
