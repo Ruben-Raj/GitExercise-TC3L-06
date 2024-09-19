@@ -7,27 +7,29 @@
 </head>
 <body>
     <header>
-        <h1>Tutor Booking System</h1>
+        <h1>Book Slot with {{ tutor.name }}</h1>
         <nav>
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
         </nav>
     </header>
-
+    
     <main>
-        <h2>Book Slot with {{ tutor.name }}</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
             <p>{{ form.student_name.label }} {{ form.student_name(size=20) }}</p>
-            <p>Select Slot:</p>
-            <div>
-                {% for slot in slots %}
-                    <button type="submit" name="slot" value="{{ slot }}">{{ slot }}</button>
+            <p>Select a slot:</p>
+            <ul>
+                {% for slot in tutor.available_slots.split(',') %}
+                <li>
+                    <input type="radio" id="{{ slot }}" name="slot" value="{{ slot }}">
+                    <label for="{{ slot }}">{{ slot }}</label>
+                </li>
                 {% endfor %}
-            </div>
+            </ul>
             <p>{{ form.submit() }}</p>
         </form>
-
+        
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="flash-messages">
