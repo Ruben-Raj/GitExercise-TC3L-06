@@ -80,6 +80,25 @@ def search_questions():
     questions = Question.query.filter(Question.content.like(f'%{query}%')).all()
     return render_template('qna_question.html', questions=questions)
 
+@app.route('/edit-question/<int:question_id>', methods=['GET', 'POST'])
+def edit_question(question_id):
+    question = Question.query.get_or_404(question_id)
+
+    if request.method == 'POST':
+        question.content = request.form['question']
+        db.session.commit()
+        return redirect(url_for('index'))
+
+    return render_template('edit_question.html', question=question)
+
+@app.route('/edit-answer/<int:answer_id>', methods=['POST'])
+def edit_answer(answer_id):
+    answer = Answer.query.get_or_404(answer_id)
+    answer.content = request.form['answer']  # Update the answer content
+    db.session.commit()  # Commit the changes to the database
+    return redirect(url_for('view_question', question_id=answer.question_id))
+
+
 
 
 if __name__ == '__main__':
