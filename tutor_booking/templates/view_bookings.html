@@ -3,6 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>View Bookings</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+    </style>
 </head>
 <body>
     <h1>View Bookings</h1>
@@ -21,9 +46,13 @@
                 <td>{{ booking.slot }}</td>
                 <td>{{ booking.tutor.name }}</td>
                 <td>
-                    <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
+                    {% if session.get('student_name') == booking.student_name %}
+                    <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                         <button type="submit">Cancel</button>
                     </form>
+                    {% else %}
+                    <span>Not Your Booking</span>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

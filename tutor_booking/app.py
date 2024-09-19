@@ -41,12 +41,16 @@ class BookingForm(FlaskForm):
 
 @app.route('/')
 def home():
-    search_query = request.args.get('search', '')
-    if search_query:
-        tutors = Tutor.query.filter(Tutor.subject.ilike(f'%{search_query}%')).all()
-    else:
-        tutors = Tutor.query.all()
-    return render_template('home.html', tutors=tutors, search_query=search_query)
+    try:
+        search_query = request.args.get('subject')
+        if search_query:
+            tutors = Tutor.query.filter(Tutor.subject.ilike(f'%{search_query}%')).all()
+        else:
+            tutors = Tutor.query.all()
+        return render_template('home.html', tutors=tutors)
+    except Exception as e:
+        print(f"Error: {e}")
+        return "Internal server error", 500
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
@@ -75,7 +79,6 @@ def book_slot(tutor_id):
         slots = [slot.strip().lower() for slot in tutor.available_slots.split(',')]
         
         if selected_slot in slots:
-            # Remove the selected slot and create a booking
             slots.remove(selected_slot)
             tutor.available_slots = ','.join(slots)
             
@@ -95,7 +98,6 @@ def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     tutor = Tutor.query.get(booking.tutor_id)
     
-    # Add the slot back to available slots
     slots = tutor.available_slots.split(',')
     slots.append(booking.slot)
     tutor.available_slots = ','.join(slots)
@@ -106,22 +108,16 @@ def cancel_booking(booking_id):
     flash('Booking canceled successfully!', 'success')
     return redirect(url_for('view_bookings'))
 
-@app.route('/bookings')
+@app.route('/view_bookings')
 def view_bookings():
-    bookings = Booking.query.all()
-    return render_template('view_bookings.html', bookings=bookings)
-
-@app.route('/tutor/bookings/<int:tutor_id>')
-def tutor_bookings(tutor_id):
-    tutor = Tutor.query.get_or_404(tutor_id)
-    bookings = Booking.query.filter_by(tutor_id=tutor_id).all()
-    return render_template('tutor_bookings.html', tutor=tutor, bookings=bookings)
+    try:
+        bookings = Booking.query.all()
+        return render_template('view_bookings.html', bookings=bookings)
+    except Exception as e:
+        print(f"Error: {e}")
+        return "Internal server error", 500
 
 if __name__ == '__main__':
     with app.app_context():
-        try:
-            db.create_all()
-            print("Database tables created successfully.")
-        except Exception as e:
-            print(f"Error creating database tables: {e}")
+        db.create_all()
     app.run(debug=True)
