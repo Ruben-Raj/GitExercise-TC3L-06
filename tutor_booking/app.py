@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-app = Flask(__name__)  # Make sure 'app' is defined first
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutors.db'
 db = SQLAlchemy(app)
@@ -68,19 +68,35 @@ def add_tutor():
         return redirect(url_for('home'))
     return render_template('add_tutor.html', form=form)
 
+@app.route('/edit_tutor/<int:tutor_id>', methods=['GET', 'POST'])
+def edit_tutor(tutor_id):
+    tutor = Tutor.query.get_or_404(tutor_id)
+    form = TutorForm(obj=tutor)
+
+    if form.validate_on_submit():
+        tutor.name = form.name.data
+        tutor.phone = form.phone.data
+        tutor.subject = form.subject.data
+        tutor.available_slots = form.available_slots.data
+        db.session.commit()
+        flash('Tutor information updated successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    return render_template('edit_tutor.html', form=form, tutor=tutor)
+
 @app.route('/book/<int:tutor_id>', methods=['GET', 'POST'])
 def book_slot(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
     form = BookingForm()
 
     if form.validate_on_submit():
-        selected_slot = form.slot.data.strip().lower()
-        slots = [slot.strip().lower() for slot in tutor.available_slots.split(',')]
+        selected_slot = form.slot.data.strip()
+        slots = [slot.strip() for slot in tutor.available_slots.split(',')]
         
         if selected_slot in slots:
             # Remove the selected slot and create a booking
             slots.remove(selected_slot)
-            tutor.available_slots = ','.join(slots)
+            tutor.available_slots = ', '.join(slots)
             
             booking = Booking(student_name=form.student_name.data, slot=selected_slot, tutor_id=tutor_id)
             db.session.add(booking)
