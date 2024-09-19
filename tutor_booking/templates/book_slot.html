@@ -18,27 +18,20 @@
         <form method="POST">
             {{ form.hidden_tag() }}
             <p>{{ form.student_name.label }} {{ form.student_name(size=20) }}</p>
-            <p>Select a slot:</p>
+            <p>Select a Slot:</p>
             <ul>
                 {% for slot in tutor.available_slots.split(',') %}
-                <li>
-                    <input type="radio" id="{{ slot }}" name="slot" value="{{ slot }}">
-                    <label for="{{ slot }}">{{ slot }}</label>
-                </li>
+                    {% set slot_info = slot.split('|') %}
+                    <li>
+                        <input type="radio" id="{{ slot_info[0] }}" name="slot" value="{{ slot_info[0] }}">
+                        <label for="{{ slot_info[0] }}">
+                            {{ slot_info[0] }} - Gmeet Link: {{ slot_info[1] if slot_info|length > 1 else 'Not available' }}
+                        </label>
+                    </li>
                 {% endfor %}
             </ul>
             <p>{{ form.submit() }}</p>
         </form>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flash-messages">
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
     </main>
 </body>
 </html>

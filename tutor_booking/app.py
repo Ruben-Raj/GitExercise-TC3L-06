@@ -15,13 +15,13 @@ class Tutor(db.Model):
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
-    available_slots = db.Column(db.String(200), nullable=False)
+    available_slots = db.Column(db.String(200), nullable=False)  # e.g. "slot1|link1, slot2|link2"
 
 # Booking Model
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
-    slot = db.Column(db.String(100), nullable=False)
+    slot = db.Column(db.String(100), nullable=False)  # Will include the Gmeet link
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
     tutor = db.relationship('Tutor', backref='bookings')
 
@@ -30,7 +30,7 @@ class TutorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     phone = StringField('Phone', validators=[DataRequired()])
     subject = StringField('Subject', validators=[DataRequired()])
-    available_slots = StringField('Available Slots (comma-separated)', validators=[DataRequired()])
+    available_slots = StringField('Available Slots and Gmeet Links (format: slot1|link1, slot2|link2)', validators=[DataRequired()])
     submit = SubmitField('Add/Update Tutor')
 
 # Booking Form
@@ -81,7 +81,7 @@ def edit_tutor(tutor_id):
         db.session.commit()
         flash('Tutor information updated successfully!', 'success')
         return redirect(url_for('home'))
-    
+
     return render_template('edit_tutor.html', form=form, tutor=tutor)
 
 @app.route('/delete_tutor/<int:tutor_id>', methods=['POST'])
@@ -101,19 +101,21 @@ def book_slot(tutor_id):
         selected_slot = form.slot.data.strip()
         slots = [slot.strip() for slot in tutor.available_slots.split(',')]
         
-        if selected_slot in slots:
-            # Remove the selected slot and create a booking
-            slots.remove(selected_slot)
-            tutor.available_slots = ', '.join(slots)
-            
-            booking = Booking(student_name=form.student_name.data, slot=selected_slot, tutor_id=tutor_id)
-            db.session.add(booking)
-            db.session.commit()
-            
-            flash('Slot booked successfully!', 'success')
-            return redirect(url_for('home'))
-        else:
-            flash('Slot not available!', 'danger')
+        for i, slot in enumerate(slots):
+            slot_info = slot.split('|')
+            if slot_info[0] == selected_slot:
+                gmeet_link = slot_info[1]  # Get the Gmeet link
+                slots.pop(i)  # Remove the selected slot
+                tutor.available_slots = ', '.join(slots)
+                
+                booking = Booking(student_name=form.student_name.data, slot=f"{selected_slot}|{gmeet_link}", tutor_id=tutor_id)
+                db.session.add(booking)
+                db.session.commit()
+                
+                flash('Slot booked successfully!', 'success')
+                return redirect(url_for('home'))
+        
+        flash('Slot not available!', 'danger')
     
     return render_template('book_slot.html', tutor=tutor, form=form)
 
@@ -124,7 +126,7 @@ def cancel_booking(booking_id):
     
     # Add the slot back to available slots
     slots = tutor.available_slots.split(',')
-    slots.append(booking.slot)
+    slots.append(booking.slot.split('|')[0])  # Add the original slot back
     tutor.available_slots = ','.join(slots)
     
     db.session.delete(booking)

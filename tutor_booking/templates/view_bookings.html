@@ -21,6 +21,7 @@
                     <th>Student Name</th>
                     <th>Slot</th>
                     <th>Tutor</th>
+                    <th>Gmeet Link</th>  <!-- New column for Gmeet link -->
                     <th>Action</th>
                 </tr>
             </thead>
@@ -30,6 +31,11 @@
                     <td>{{ booking.student_name }}</td>
                     <td>{{ booking.slot }}</td>
                     <td>{{ booking.tutor.name }}</td>
+                    <td>
+                        <a href="{{ booking.slot.split('|')[1] }}" target="_blank">
+                            <button type="button">Join Meeting</button>
+                        </a>
+                    </td>
                     <td>
                         <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
                             <button type="submit">Cancel</button>
