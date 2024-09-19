@@ -84,6 +84,14 @@ def edit_tutor(tutor_id):
     
     return render_template('edit_tutor.html', form=form, tutor=tutor)
 
+@app.route('/delete_tutor/<int:tutor_id>', methods=['POST'])
+def delete_tutor(tutor_id):
+    tutor = Tutor.query.get_or_404(tutor_id)
+    db.session.delete(tutor)
+    db.session.commit()
+    flash('Tutor deleted successfully!', 'success')
+    return redirect(url_for('home'))
+
 @app.route('/book/<int:tutor_id>', methods=['GET', 'POST'])
 def book_slot(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
