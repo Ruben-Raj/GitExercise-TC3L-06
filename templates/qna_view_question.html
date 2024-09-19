@@ -19,7 +19,6 @@
             <p>Posted by: <strong>Anonymous</strong></p>
         </div>
         
-        
         <div class="answer-form">
             <h2>Submit Your Answer</h2>
             <form action="{{ url_for('view_question', question_id=question.id) }}" method="POST">
@@ -28,10 +27,9 @@
             </form>
         </div>
 
-        
         <div class="answers">
             <h2>Answers</h2>
-            {% for answer in question.answers %}
+            {% for answer in answers.items %}
             <div class="answer">
                 <p>{{ answer.content }}</p>
 
@@ -54,12 +52,26 @@
             </div>
             {% endfor %}
         </div>
+
         
+        <div class="pagination">
+            {% if answers.has_prev %}
+                <a href="{{ url_for('view_question', question_id=question.id, page=answers.prev_num) }}">Previous</a>
+            {% endif %}
+            
+            <span>Page {{ answers.page }} of {{ answers.pages }}</span>
+
+            {% if answers.has_next %}
+                <a href="{{ url_for('view_question', question_id=question.id, page=answers.next_num) }}">Next</a>
+            {% endif %}
+        </div>
+
         <script>
         function toggleEditForm(answerId) {
             const form = document.getElementById('edit-form-' + answerId);
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
         </script>
-            
+    </div>
+</body>
 </html>
