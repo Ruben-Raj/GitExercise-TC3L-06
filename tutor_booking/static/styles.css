@@ -1,45 +1,40 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
     padding: 0;
 }
 
-h1 {
-    color: #333;
-}
-
-/* Header */
 header {
-    background-color: #333;
+    background-color: #007BFF;
     color: #fff;
-    padding: 10px 0;
+    padding: 20px;
     text-align: center;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
-header h1 {
-    margin: 0;
-}
-
-/* Navigation */
 nav {
     text-align: center;
-    margin-bottom: 20px;
+    margin: 10px 0;
 }
 
 nav a {
     color: #fff;
-    background-color: #007BFF;
+    background-color: #0056b3;
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
     margin: 0 5px;
+    transition: background-color 0.3s;
 }
 
 nav a:hover {
-    background-color: #0056b3;
+    background-color: #003d7a;
 }
 
 /* Forms */
@@ -75,6 +70,7 @@ form button {
     color: #fff;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 form button:hover {
@@ -127,6 +123,7 @@ button {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 button:hover {
@@ -153,4 +150,16 @@ ul.flash-messages .success {
 ul.flash-messages .danger {
     background-color: #f8d7da;
     color: #721c24;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    form {
+        padding: 10px;
+    }
+
+    nav a {
+        display: block;
+        margin: 5px 0;
+    }
 }
