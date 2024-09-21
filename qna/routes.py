@@ -1,39 +1,11 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'database.db')
-
-# Create 'instance' directory if it doesn't exist
-if not os.path.exists(os.path.dirname(db_path)):
-    os.makedirs(os.path.dirname(db_path))
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-class Question(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-
-class Answer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    question = db.relationship('Question', backref=db.backref('answers', lazy=True))
-    upvotes = db.Column(db.Integer, default=0)
-
-with app.app_context():
-    db.create_all()
+from flask import request, render_template, redirect, url_for, flash
+from . import app, db
+from .models import Question, Answer
 
 @app.route('/', defaults={'page': 1})
 @app.route('/page/<int:page>')
 def index(page):
-    per_page = 2  
+    per_page = 2
     questions = Question.query.paginate(page=page, per_page=per_page)
     return render_template('qna_question.html', questions=questions)
 
@@ -107,6 +79,3 @@ def edit_answer(answer_id):
     answer.content = request.form['answer']
     db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
-
-if __name__ == '__main__':
-    app.run(debug=True)
