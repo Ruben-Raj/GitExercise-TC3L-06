@@ -1,25 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <img src="{{ url_for('static', filename='images/MMU_logo.jpg') }}" alt="Logo" style="width: 300px; margin-top: 30px;">
-    <h1>MMU Student Hub</h1>
-    <h2>Sign Up</h2>
-    <form action="{{ url_for('register') }}" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Register</button>
-    </form>
-    <a href="{{ url_for('login') }}">Already have an account? Login </a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+{% if session['logged_in'] %}
+<p>You have registred already</p>
+{% else %}
+
+
+
+<div id="loginbody">
+    <div id="login">
+        <div class="container">
+            <div id="login-row" class="row justify-content-center align-items-center">
+                <div id="login-column" class="col-md-6">
+                    <div id="login-box" class="col-md-12">
+                        <form id="login-form" class="form" action="/register" method="post">
+                            <h3 class="text-center text-info">MMU Student Hubs</h3>
+                            <h3 class="text-center text-info">Register</h3>
+                            <div class="form-group">
+                                <label for="username" class="text-info">Username:</label><br>
+                                <input type="text" name="username" id="username" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="text-info">Password:</label><br>
+                                <input type="password" name="password" id="password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="remember-me" class="text-info"><span></span> <span><input id="remember-me" type="hidden" name="remember-me"></span></label><br>
+                                <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
+                            </div>
+                            <div id="register-link" class="text-right">
+                                <a href="/login" class="text-info">Login here</a>
+                            </div>
+
+                        </form>
+
+
+                        </div>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+{% for message in messages %}
+<li style="color:red; font-weight:bold">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endif %}
+{% endblock %}
