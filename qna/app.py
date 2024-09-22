@@ -1,20 +1,24 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'database.db')
-
-# Create 'instance' directory if it doesn't exist
-if not os.path.exists(os.path.dirname(db_path)):
-    os.makedirs(os.path.dirname(db_path))
-
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "Foobar@2024"
 
 db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(80))
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,6 +33,54 @@ class Answer(db.Model):
 
 with app.app_context():
     db.create_all()
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists. Please choose a different username.')
+            return redirect(url_for('register'))
+        else:
+            new_user = User(
+                username=username,
+                password=generate_password_hash(request.form.get('password'))
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('You have successfully registered. Please login.')
+            return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        username = request.form['username']
+        password = request.form.get('password')
+
+        query_user = User.query.filter_by(username=username).first()
+
+        if query_user:
+            if check_password_hash(query_user.password, password):
+                session['logged_in'] = True
+                return redirect(url_for('index'))  # Redirect to the Q&A index
+            else:
+                flash('Username/email or password is incorrect.')
+                return redirect(url_for('login'))
+        else:
+            flash('Username/email or password is incorrect.')
+            return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    session['logged_in'] = False
+    return redirect(url_for('login'))
+
 
 @app.route('/', defaults={'page': 1})
 @app.route('/page/<int:page>')
@@ -46,9 +98,7 @@ def submit_question():
     return redirect(url_for('index'))
 
 @app.route('/question/<int:question_id>', methods=['GET', 'POST'])
-@app.route('/question/<int:question_id>/page/<int:page>', methods=['GET', 'POST']) 
-@app.route('/question/<int:question_id>', defaults={'page': 1}, methods=['GET', 'POST'])  
-def view_question(question_id, page=1):  
+def view_question(question_id):  
     question = Question.query.get_or_404(question_id)
     
     if request.method == 'POST':
@@ -59,16 +109,9 @@ def view_question(question_id, page=1):
         return redirect(url_for('view_question', question_id=question.id))
     
     per_page = 2  
-    answers = Answer.query.filter_by(question_id=question.id).paginate(page=page, per_page=per_page)
+    answers = Answer.query.filter_by(question_id=question.id).paginate(page=1, per_page=per_page)
     
     return render_template('qna_view_question.html', question=question, answers=answers)
-
-@app.route('/upvote/<int:answer_id>', methods=['POST'])
-def upvote_answer(answer_id):
-    answer = Answer.query.get_or_404(answer_id)
-    answer.upvotes += 1
-    db.session.commit()
-    return redirect(url_for('view_question', question_id=answer.question_id))
 
 @app.route('/delete-answer/<int:answer_id>', methods=['POST'])
 def delete_answer(answer_id):
@@ -82,7 +125,9 @@ def delete_question(question_id):
     question = Question.query.get_or_404(question_id)
     db.session.delete(question)
     db.session.commit()
+    flash('Question deleted successfully.')
     return redirect(url_for('index'))
+
 
 @app.route('/search', methods=['GET'])
 def search_questions():
@@ -93,12 +138,12 @@ def search_questions():
 @app.route('/edit-question/<int:question_id>', methods=['GET', 'POST'])
 def edit_question(question_id):
     question = Question.query.get_or_404(question_id)
-
+    
     if request.method == 'POST':
         question.content = request.form['question']
         db.session.commit()
         return redirect(url_for('index'))
-
+    
     return render_template('edit_question.html', question=question)
 
 @app.route('/edit-answer/<int:answer_id>', methods=['POST'])
