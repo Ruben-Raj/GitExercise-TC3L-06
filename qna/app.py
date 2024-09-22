@@ -103,8 +103,9 @@ def submit_question():
     db.session.commit()
     return redirect(url_for('index'))
 
-@app.route('/question/<int:question_id>', methods=['GET', 'POST'])
-def view_question(question_id):  
+@app.route('/question/<int:question_id>', defaults={'page': 1}, methods=['GET', 'POST'])
+@app.route('/question/<int:question_id>/page/<int:page>', methods=['GET', 'POST'])
+def view_question(question_id, page):  
     question = Question.query.get_or_404(question_id)
     
     if request.method == 'POST':
@@ -117,11 +118,12 @@ def view_question(question_id):
         db.session.add(new_answer)
         db.session.commit()
         return redirect(url_for('view_question', question_id=question.id))
-    
+
     per_page = 2  
-    answers = Answer.query.filter_by(question_id=question.id).paginate(page=1, per_page=per_page)
-    
+    answers = Answer.query.filter_by(question_id=question.id).paginate(page=page, per_page=per_page)
+
     return render_template('qna_view_question.html', question=question, answers=answers)
+
 
 @app.route('/delete-answer/<int:answer_id>', methods=['POST'])
 def delete_answer(answer_id):
