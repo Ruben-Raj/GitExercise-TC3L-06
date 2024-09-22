@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'database.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
@@ -13,7 +12,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "Foobar@2024"
 
 db = SQLAlchemy(app)
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,7 +35,6 @@ class Answer(db.Model):
 
 with app.app_context():
     db.create_all()
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -72,7 +69,8 @@ def login():
         if query_user:
             if check_password_hash(query_user.password, password):
                 session['logged_in'] = True
-                return redirect(url_for('index'))  # Redirect to the Q&A index
+                session['user_id'] = query_user.id  
+                return redirect(url_for('index'))  
             else:
                 flash('Username/email or password is incorrect.')
                 return redirect(url_for('login'))
@@ -82,9 +80,9 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session['logged_in'] = False
+    session.pop('logged_in', None)  
+    session.pop('user_id', None)      
     return redirect(url_for('login'))
-
 
 @app.route('/', defaults={'page': 1})
 @app.route('/page/<int:page>')
@@ -95,6 +93,10 @@ def index(page):
 
 @app.route('/submit-question', methods=['POST'])
 def submit_question():
+    if 'logged_in' not in session:  
+        flash('You must be logged in to submit a question.')
+        return redirect(url_for('login'))
+    
     question_content = request.form['question']
     new_question = Question(content=question_content)
     db.session.add(new_question)
@@ -106,6 +108,10 @@ def view_question(question_id):
     question = Question.query.get_or_404(question_id)
     
     if request.method == 'POST':
+        if 'logged_in' not in session:  
+            flash('You must be logged in to answer a question.')
+            return redirect(url_for('login'))
+        
         answer_content = request.form['answer']
         new_answer = Answer(content=answer_content, question_id=question.id)
         db.session.add(new_answer)
@@ -119,6 +125,10 @@ def view_question(question_id):
 
 @app.route('/delete-answer/<int:answer_id>', methods=['POST'])
 def delete_answer(answer_id):
+    if 'logged_in' not in session:  
+        flash('You must be logged in to delete an answer.')
+        return redirect(url_for('login'))
+
     answer = Answer.query.get_or_404(answer_id)
     db.session.delete(answer)
     db.session.commit()
@@ -126,11 +136,14 @@ def delete_answer(answer_id):
 
 @app.route('/delete-question/<int:question_id>', methods=['POST'])
 def delete_question(question_id):
+    if 'logged_in' not in session:  
+        flash('You must be logged in to delete a question.')
+        return redirect(url_for('login'))
+
     question = Question.query.get_or_404(question_id)
     db.session.delete(question)
     db.session.commit()
     return redirect(url_for('index'))
-
 
 @app.route('/search', methods=['GET'])
 def search_questions():
@@ -140,6 +153,10 @@ def search_questions():
 
 @app.route('/edit-question/<int:question_id>', methods=['GET', 'POST'])
 def edit_question(question_id):
+    if 'logged_in' not in session:  
+        flash('You must be logged in to edit a question.')
+        return redirect(url_for('login'))
+
     question = Question.query.get_or_404(question_id)
     
     if request.method == 'POST':
@@ -151,6 +168,10 @@ def edit_question(question_id):
 
 @app.route('/edit-answer/<int:answer_id>', methods=['POST'])
 def edit_answer(answer_id):
+    if 'logged_in' not in session:  
+        flash('You must be logged in to edit an answer.')
+        return redirect(url_for('login'))
+
     answer = Answer.query.get_or_404(answer_id)
     answer.content = request.form['answer']
     db.session.commit()
@@ -158,6 +179,10 @@ def edit_answer(answer_id):
 
 @app.route('/upvote/<int:answer_id>', methods=['POST'])
 def upvote_answer(answer_id):
+    if 'logged_in' not in session:  
+        flash('You must be logged in to upvote an answer.')
+        return redirect(url_for('login'))
+
     answer = Answer.query.get_or_404(answer_id)
     answer.upvotes += 1
     db.session.commit()
