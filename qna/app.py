@@ -20,6 +20,10 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80))
 
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
@@ -125,7 +129,6 @@ def delete_question(question_id):
     question = Question.query.get_or_404(question_id)
     db.session.delete(question)
     db.session.commit()
-    flash('Question deleted successfully.')
     return redirect(url_for('index'))
 
 
@@ -150,6 +153,13 @@ def edit_question(question_id):
 def edit_answer(answer_id):
     answer = Answer.query.get_or_404(answer_id)
     answer.content = request.form['answer']
+    db.session.commit()
+    return redirect(url_for('view_question', question_id=answer.question_id))
+
+@app.route('/upvote/<int:answer_id>', methods=['POST'])
+def upvote_answer(answer_id):
+    answer = Answer.query.get_or_404(answer_id)
+    answer.upvotes += 1
     db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
 
