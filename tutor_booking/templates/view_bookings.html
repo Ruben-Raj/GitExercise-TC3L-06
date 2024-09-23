@@ -29,7 +29,7 @@
                 {% for booking in bookings %}
                 <tr>
                     <td>{{ booking.student_name }}</td>
-                    <td>{{ booking.slot }}</td>
+                    <td>{{ booking.slot.split('|')[0] }}</td> <!-- Display only the slot -->
                     <td>{{ booking.tutor.name }}</td>
                     <td>
                         <a href="{{ booking.slot.split('|')[1] }}" target="_blank">

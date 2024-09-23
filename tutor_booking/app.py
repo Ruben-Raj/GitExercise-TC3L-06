@@ -16,6 +16,7 @@ class Tutor(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     available_slots = db.Column(db.String(200), nullable=False)  # e.g. "slot1|link1, slot2|link2"
+    bookings = db.relationship('Booking', cascade='all, delete', backref='tutor')
 
 # Booking Model
 class Booking(db.Model):
@@ -23,7 +24,6 @@ class Booking(db.Model):
     student_name = db.Column(db.String(100), nullable=False)
     slot = db.Column(db.String(100), nullable=False)  # Will include the Gmeet link
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
-    tutor = db.relationship('Tutor', backref='bookings')
 
 # Tutor Form
 class TutorForm(FlaskForm):
@@ -87,9 +87,20 @@ def edit_tutor(tutor_id):
 @app.route('/delete_tutor/<int:tutor_id>', methods=['POST'])
 def delete_tutor(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
-    db.session.delete(tutor)
-    db.session.commit()
-    flash('Tutor deleted successfully!', 'success')
+    
+    try:
+        # Deleting all associated bookings
+        if tutor.bookings:
+            for booking in tutor.bookings:
+                db.session.delete(booking)
+        
+        db.session.delete(tutor)
+        db.session.commit()
+        flash('Tutor deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of any error
+        flash(f'Error deleting tutor: {str(e)}', 'danger')
+    
     return redirect(url_for('home'))
 
 @app.route('/book/<int:tutor_id>', methods=['GET', 'POST'])
