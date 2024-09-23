@@ -15,14 +15,14 @@ class Tutor(db.Model):
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
-    available_slots = db.Column(db.String(200), nullable=False)  # e.g. "slot1|link1, slot2|link2"
+    available_slots = db.Column(db.String(200), nullable=False)
     bookings = db.relationship('Booking', cascade='all, delete', backref='tutor')
 
 # Booking Model
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
-    slot = db.Column(db.String(100), nullable=False)  # Will include the Gmeet link
+    slot = db.Column(db.String(100), nullable=False)
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
 
 # Tutor Form
@@ -42,13 +42,17 @@ class BookingForm(FlaskForm):
 @app.route('/', methods=['GET'])
 def home():
     search_query = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
     if search_query:
         tutors = Tutor.query.filter(
             (Tutor.name.ilike(f'%{search_query}%')) | 
             (Tutor.subject.ilike(f'%{search_query}%'))
-        ).all()
+        ).paginate(page=page, per_page=per_page)
     else:
-        tutors = Tutor.query.all()
+        tutors = Tutor.query.paginate(page=page, per_page=per_page)
+
     return render_template('home.html', tutors=tutors)
 
 @app.route('/tutor/<int:tutor_id>')
@@ -89,7 +93,6 @@ def delete_tutor(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
     
     try:
-        # Deleting all associated bookings
         if tutor.bookings:
             for booking in tutor.bookings:
                 db.session.delete(booking)
@@ -98,7 +101,7 @@ def delete_tutor(tutor_id):
         db.session.commit()
         flash('Tutor deleted successfully!', 'success')
     except Exception as e:
-        db.session.rollback()  # Rollback in case of any error
+        db.session.rollback()
         flash(f'Error deleting tutor: {str(e)}', 'danger')
     
     return redirect(url_for('home'))
@@ -115,8 +118,8 @@ def book_slot(tutor_id):
         for i, slot in enumerate(slots):
             slot_info = slot.split('|')
             if slot_info[0] == selected_slot:
-                gmeet_link = slot_info[1]  # Get the Gmeet link
-                slots.pop(i)  # Remove the selected slot
+                gmeet_link = slot_info[1]
+                slots.pop(i)
                 tutor.available_slots = ', '.join(slots)
                 
                 booking = Booking(student_name=form.student_name.data, slot=f"{selected_slot}|{gmeet_link}", tutor_id=tutor_id)
@@ -135,9 +138,8 @@ def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     tutor = Tutor.query.get(booking.tutor_id)
     
-    # Add the slot back to available slots
     slots = tutor.available_slots.split(',')
-    slots.append(booking.slot.split('|')[0])  # Add the original slot back
+    slots.append(booking.slot.split('|')[0])
     tutor.available_slots = ','.join(slots)
     
     db.session.delete(booking)

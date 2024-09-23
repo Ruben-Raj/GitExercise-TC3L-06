@@ -29,6 +29,16 @@
             {% endfor %}
         </ul>
         
+        <div class="pagination">
+            {% if tutors.has_prev %}
+                <a href="{{ url_for('home', page=tutors.prev_num, search=request.args.get('search', '')) }}">Previous</a>
+            {% endif %}
+            <span>Page {{ tutors.page }} of {{ tutors.pages }}</span>
+            {% if tutors.has_next %}
+                <a href="{{ url_for('home', page=tutors.next_num, search=request.args.get('search', '')) }}">Next</a>
+            {% endif %}
+        </div>
+        
         <a href="{{ url_for('add_tutor') }}">Add New Tutor</a>
     </main>
 </body>

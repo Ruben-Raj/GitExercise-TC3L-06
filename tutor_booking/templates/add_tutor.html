@@ -15,12 +15,16 @@
     </header>
     
     <main>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <p>{{ form.name.label }} {{ form.name(size=20) }}</p>
             <p>{{ form.phone.label }} {{ form.phone(size=20) }}</p>
             <p>{{ form.subject.label }} {{ form.subject(size=20) }}</p>
             <p>{{ form.available_slots.label }} {{ form.available_slots(size=100) }}</p>
+            <p>
+                <label for="photo">Upload Photo:</label>
+                <input type="file" name="photo" accept="image/*">
+            </p>
             <p>{{ form.submit() }}</p>
         </form>
         
