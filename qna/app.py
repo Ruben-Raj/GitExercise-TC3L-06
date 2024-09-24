@@ -25,13 +25,18 @@ class User(db.Model):
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('questions', lazy=True))
 
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Link to User
     question = db.relationship('Question', backref=db.backref('answers', lazy=True))
+    user = db.relationship('User', backref=db.backref('answers', lazy=True))
     upvotes = db.Column(db.Integer, default=0)
+
 
 with app.app_context():
     db.create_all()
@@ -98,7 +103,7 @@ def submit_question():
         return redirect(url_for('login'))
     
     question_content = request.form['question']
-    new_question = Question(content=question_content)
+    new_question = Question(content=question_content, user_id=session['user_id'])
     db.session.add(new_question)
     db.session.commit()
     return redirect(url_for('index'))
@@ -114,7 +119,7 @@ def view_question(question_id, page):
             return redirect(url_for('login'))
         
         answer_content = request.form['answer']
-        new_answer = Answer(content=answer_content, question_id=question.id)
+        new_answer = Answer(content=answer_content, question_id=question.id, user_id=session['user_id'])
         db.session.add(new_answer)
         db.session.commit()
         return redirect(url_for('view_question', question_id=question.id))
@@ -132,6 +137,9 @@ def delete_answer(answer_id):
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
+    if answer.user_id != session['user_id']: 
+        return redirect(url_for('view_question', question_id=answer.question_id))
+
     db.session.delete(answer)
     db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
@@ -143,6 +151,9 @@ def delete_question(question_id):
         return redirect(url_for('login'))
 
     question = Question.query.get_or_404(question_id)
+    if question.user_id != session['user_id']:
+        return redirect(url_for('index'))
+
     db.session.delete(question)
     db.session.commit()
     return redirect(url_for('index'))
@@ -160,6 +171,9 @@ def edit_question(question_id):
         return redirect(url_for('login'))
 
     question = Question.query.get_or_404(question_id)
+    if question.user_id != session['user_id']: 
+        return redirect(url_for('index'))
+
     
     if request.method == 'POST':
         question.content = request.form['question']
@@ -175,6 +189,9 @@ def edit_answer(answer_id):
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
+    if answer.user_id != session['user_id']:
+        return redirect(url_for('view_question', question_id=answer.question_id))
+    
     answer.content = request.form['answer']
     db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
