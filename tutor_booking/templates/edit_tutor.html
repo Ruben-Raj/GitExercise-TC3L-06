@@ -2,26 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Tutor Information</title>
+    <title>Edit Tutor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Edit Tutor Information</h1>
+        <h1>Edit Tutor</h1>
         <nav>
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
         </nav>
     </header>
-    
+
     <main>
         <form method="POST">
             {{ form.hidden_tag() }}
-            <p>{{ form.name.label }} {{ form.name(size=20) }}</p>
-            <p>{{ form.phone.label }} {{ form.phone(size=20) }}</p>
-            <p>{{ form.subject.label }} {{ form.subject(size=20) }}</p>
-            <p>{{ form.available_slots.label }} {{ form.available_slots(size=20) }}</p>
-            <p>{{ form.submit() }}</p>
+            {{ form.name.label }} {{ form.name() }}<br>
+            {{ form.phone.label }} {{ form.phone() }}<br>
+            {{ form.subject.label }} {{ form.subject() }}<br>
+            {{ form.available_slots.label }} {{ form.available_slots() }}<br>
+            {{ form.submit() }}
+        </form>
+
+        <form method="POST" action="{{ url_for('delete_tutor', tutor_id=tutor.id) }}">
+            <button type="submit">Delete Tutor</button>
         </form>
     </main>
 </body>

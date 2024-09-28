@@ -89,8 +89,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
-            session['username'] = user.username  # Store the username in session
-            flash(f'Logged in successfully as {user.username}!', 'success')
+            flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password.', 'danger')
@@ -101,7 +100,6 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    session.pop('username', None)  # Clear the username from the session
     flash('You have successfully logged out.', 'success')
     return redirect(url_for('login'))
 
@@ -118,9 +116,7 @@ def home():
         ).all()
     else:
         tutors = Tutor.query.all()
-
-    username = session.get('username')  # Get the username from the session
-    return render_template('home.html', tutors=tutors, username=username)
+    return render_template('home.html', tutors=tutors)
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
@@ -153,6 +149,14 @@ def edit_tutor(tutor_id):
         return redirect(url_for('home'))
     return render_template('edit_tutor.html', form=form, tutor=tutor)
 
+@app.route('/delete_tutor/<int:tutor_id>', methods=['POST'])
+def delete_tutor(tutor_id):
+    tutor = Tutor.query.get_or_404(tutor_id)
+    db.session.delete(tutor)
+    db.session.commit()
+    flash('Tutor deleted successfully!', 'success')
+    return redirect(url_for('home'))
+
 @app.route('/book/<int:tutor_id>', methods=['GET', 'POST'])
 def book_slot(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
@@ -176,21 +180,18 @@ def book_slot(tutor_id):
 def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     tutor = Tutor.query.get(booking.tutor_id)
-    slots = tutor.available_slots.split(',')
-    slots.append(booking.slot)
-    tutor.available_slots = ', '.join(slots)
-    db.session.delete(booking)
-    db.session.commit()
-    flash('Booking canceled successfully!', 'success')
+    if booking:
+        db.session.delete(booking)
+        db.session.commit()
+        flash('Booking cancelled successfully!', 'success')
+        return redirect(url_for('view_bookings'))
+    flash('Error cancelling booking.', 'danger')
     return redirect(url_for('view_bookings'))
 
-@app.route('/bookings')
+@app.route('/view_bookings')
 def view_bookings():
     bookings = Booking.query.all()
-    print(f"Bookings: {bookings}")  # Debug line to see if bookings are retrieved
     return render_template('view_bookings.html', bookings=bookings)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
