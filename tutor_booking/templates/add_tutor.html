@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Tutor</title>
+    <title>Add/Update Tutor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Add Tutor</h1>
+        <h1>Add/Update Tutor Information</h1>
         <nav>
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
@@ -15,28 +15,14 @@
     </header>
     
     <main>
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST">
             {{ form.hidden_tag() }}
             <p>{{ form.name.label }} {{ form.name(size=20) }}</p>
             <p>{{ form.phone.label }} {{ form.phone(size=20) }}</p>
             <p>{{ form.subject.label }} {{ form.subject(size=20) }}</p>
-            <p>{{ form.available_slots.label }} {{ form.available_slots(size=100) }}</p>
-            <p>
-                <label for="photo">Upload Photo:</label>
-                <input type="file" name="photo" accept="image/*">
-            </p>
+            <p>{{ form.available_slots.label }} {{ form.available_slots(size=20) }}</p>
             <p>{{ form.submit() }}</p>
         </form>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flash-messages">
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
     </main>
 </body>
 </html>

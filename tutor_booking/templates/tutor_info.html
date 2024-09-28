@@ -2,34 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tutor Information</title>
+    <title>{{ tutor.name }} - Info</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>{{ tutor.name }}</h1>
+        <h1>Tutor Booking System</h1>
         <nav>
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('view_bookings') }}">View All Bookings</a>
         </nav>
     </header>
-    
+
     <main>
-        <h2>Details</h2>
+        <h2>{{ tutor.name }}</h2>
         <p>Phone: {{ tutor.phone }}</p>
         <p>Subject: {{ tutor.subject }}</p>
-        <p>Available Slots: {{ tutor.available_slots }}</p>
-        
-        {% if tutor.photo_filename %}
-            <h3>Photo:</h3>
-            <img src="{{ url_for('static', filename='uploads/' ~ tutor.photo_filename) }}" alt="Photo of {{ tutor.name }}" style="max-width: 200px; max-height: 200px;">
-        {% else %}
-            <p>No photo available.</p>
-        {% endif %}
-
-        <a href="{{ url_for('book_slot', tutor_id=tutor.id) }}">
-            <button type="button">Book a Slot</button>
-        </a>
+        <p>Available Slots:</p>
+        <ul>
+            {% for slot in tutor.available_slots.split(',') %}
+                <li>{{ slot }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('book_slot', tutor_id=tutor.id) }}">Book a Slot</a>
     </main>
 </body>
 </html>
