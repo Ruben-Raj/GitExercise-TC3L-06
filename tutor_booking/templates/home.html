@@ -29,14 +29,25 @@
         </form>
         
         <ul>
-            {% for tutor in tutors %}
+            {% for tutor in tutors.items %}
             <li>
                 <a href="{{ url_for('tutor_info', tutor_id=tutor.id) }}">{{ tutor.name }} ({{ tutor.subject }})</a>
                 <a href="{{ url_for('edit_tutor', tutor_id=tutor.id) }}">Edit</a>
             </li>
             {% endfor %}
         </ul>
-        
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            {% if tutors.has_prev %}
+                <a href="{{ url_for('home', page=tutors.prev_num, search=request.args.get('search', '')) }}">&laquo; Previous</a>
+            {% endif %}
+            <span>Page {{ tutors.page }} of {{ tutors.pages }}</span>
+            {% if tutors.has_next %}
+                <a href="{{ url_for('home', page=tutors.next_num, search=request.args.get('search', '')) }}">Next &raquo;</a>
+            {% endif %}
+        </div>
+
         <a href="{{ url_for('add_tutor') }}">Add/Update Tutor Information</a>
     </main>
 </body>

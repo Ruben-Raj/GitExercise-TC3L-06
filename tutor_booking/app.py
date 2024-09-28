@@ -109,13 +109,17 @@ def home():
         return redirect(url_for('login'))
 
     search_query = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)  # Get the current page number
+    per_page = 5  # Set how many tutors to display per page
+
     if search_query:
         tutors = Tutor.query.filter(
             (Tutor.name.ilike(f'%{search_query}%')) | 
             (Tutor.subject.ilike(f'%{search_query}%'))
-        ).all()
+        ).paginate(page=page, per_page=per_page)  # Paginate results
     else:
-        tutors = Tutor.query.all()
+        tutors = Tutor.query.paginate(page=page, per_page=per_page)  # Paginate results
+
     return render_template('home.html', tutors=tutors)
 
 @app.route('/tutor/<int:tutor_id>')
@@ -180,18 +184,20 @@ def book_slot(tutor_id):
 def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     tutor = Tutor.query.get(booking.tutor_id)
-    if booking:
-        db.session.delete(booking)
-        db.session.commit()
-        flash('Booking cancelled successfully!', 'success')
-        return redirect(url_for('view_bookings'))
-    flash('Error cancelling booking.', 'danger')
+    slots = tutor.available_slots.split(',')
+    slots.append(booking.slot)
+    tutor.available_slots = ', '.join(slots)
+    db.session.delete(booking)
+    db.session.commit()
+    flash('Booking canceled successfully!', 'success')
     return redirect(url_for('view_bookings'))
 
-@app.route('/view_bookings')
+@app.route('/bookings')
 def view_bookings():
     bookings = Booking.query.all()
     return render_template('view_bookings.html', bookings=bookings)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
