@@ -224,17 +224,19 @@ def upvote_answer(answer_id):
     existing_upvote = Upvote.query.filter_by(user_id=session['user_id'], answer_id=answer_id).first()
 
     if existing_upvote:
-        flash('You have already upvoted this answer.', category='upvote')
+        db.session.delete(existing_upvote)
+        answer.upvotes -= 1
+        flash('You have removed your upvote.', category='upvote')
+
     else:
-       
         new_upvote = Upvote(user_id=session['user_id'], answer_id=answer.id)
         db.session.add(new_upvote)
-
-        
         answer.upvotes += 1
-        db.session.commit()
-        
+        flash('You have upvoted this answer.', category='upvote')
+
+    db.session.commit()
     return redirect(url_for('view_question', question_id=answer.question_id))
+
 
 
 
