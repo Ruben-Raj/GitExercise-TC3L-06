@@ -15,30 +15,34 @@
     </header>
     
     <main>
-        <table>
-            <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>Slot</th>
-                    <th>Tutor</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in bookings %}
-                <tr>
-                    <td>{{ booking.student_name }}</td>
-                    <td>{{ booking.slot }}</td>
-                    <td>{{ booking.tutor.name }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
-                            <button type="submit">Cancel</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Slot</th>
+                        <th>Tutor</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.student_name }}</td>
+                        <td>{{ booking.slot }}</td>
+                        <td>{{ booking.tutor.name }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}">
+                                <button type="submit">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No bookings found.</p>
+        {% endif %}
     </main>
 </body>
 </html>

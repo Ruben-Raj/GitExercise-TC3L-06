@@ -12,4 +12,5 @@ class Booking(db.Model):
     student_name = db.Column(db.String(100), nullable=False)
     slot = db.Column(db.String(100), nullable=False)
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Link to User
     tutor = db.relationship('Tutor', backref='bookings')

@@ -89,7 +89,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
-            flash('Logged in successfully!', 'success')
+            session['username'] = user.username  # Store the username in session
+            flash(f'Logged in successfully as {user.username}!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password.', 'danger')
@@ -100,6 +101,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('username', None)  # Clear the username from the session
     flash('You have successfully logged out.', 'success')
     return redirect(url_for('login'))
 
@@ -116,7 +118,9 @@ def home():
         ).all()
     else:
         tutors = Tutor.query.all()
-    return render_template('home.html', tutors=tutors)
+
+    username = session.get('username')  # Get the username from the session
+    return render_template('home.html', tutors=tutors, username=username)
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
@@ -183,6 +187,7 @@ def cancel_booking(booking_id):
 @app.route('/bookings')
 def view_bookings():
     bookings = Booking.query.all()
+    print(f"Bookings: {bookings}")  # Debug line to see if bookings are retrieved
     return render_template('view_bookings.html', bookings=bookings)
 
 if __name__ == '__main__':
