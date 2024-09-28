@@ -32,10 +32,18 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Link to User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
     question = db.relationship('Question', backref=db.backref('answers', lazy=True))
     user = db.relationship('User', backref=db.backref('answers', lazy=True))
     upvotes = db.Column(db.Integer, default=0)
+
+class Upvote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    answer_id = db.Column(db.Integer, db.ForeignKey('answer.id'), nullable=False)
+    db.UniqueConstraint('user_id', 'answer_id', name='unique_user_answer')
+
+
 
 
 with app.app_context():
@@ -203,9 +211,24 @@ def upvote_answer(answer_id):
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
-    answer.upvotes += 1
-    db.session.commit()
+    
+    
+    existing_upvote = Upvote.query.filter_by(user_id=session['user_id'], answer_id=answer_id).first()
+
+    if existing_upvote:
+        flash('You have already upvoted this answer.')
+    else:
+       
+        new_upvote = Upvote(user_id=session['user_id'], answer_id=answer.id)
+        db.session.add(new_upvote)
+
+        
+        answer.upvotes += 1
+        db.session.commit()
+        
     return redirect(url_for('view_question', question_id=answer.question_id))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
