@@ -7,10 +7,18 @@
 <body>
     <div class="banner">
         <div class="navbar">
-            <h1>MMU UNIVERSITY STUDENT HUB & TUTORIAL WEBSITE</h1>
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="MMU University Student Hub & Tutorial Website" class="banner-img">
             <ul>
-                <li><a href="http://127.0.0.1:5000/register">SIGN UP</a></li>
-                <li><a href="http://127.0.0.1:5000/logout">LOGOUT</a></li>
+                <li>
+                    <a href="http://127.0.0.1:5000/register">
+                        <img src="{{ url_for('static', filename='signup.png') }}" alt="Sign Up" class="nav-img">
+                    </a>
+                </li>
+                <li>
+                    <a href="http://127.0.0.1:5000/logout">
+                        <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout" class="nav-img">
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -33,16 +41,19 @@
         {% for question in questions %}
         <div class="question">
             <h3><a href="{{ url_for('view_question', question_id=question.id) }}">{{ question.content }}</a></h3>
-            <p>Posted by: <strong>Anonymous</strong></p>
+            <p>Posted by: <strong>{{ question.username }}</strong></p>
         </div>
 
-        <form action="{{ url_for('edit_question', question_id=question.id) }}" method="GET" class="edit-form">
-            <button type="submit" class="edit-btn">Edit</button>
-        </form>
+        <div class="button-group"> 
+            <form action="{{ url_for('edit_question', question_id=question.id) }}" method="GET" class="edit">
+                <button type="submit" class="edit-btn">Edit</button>
+            </form>
 
-        <form action="{{ url_for('delete_question', question_id=question.id) }}" method="POST" class="delete-form">
-            <button type="submit" class="delete-btn">Delete</button>
-        </form>
+            <form action="{{ url_for('delete_question', question_id=question.id) }}" method="POST" class="delete-form">
+                <button type="submit" class="delete-btn">Delete</button>
+            </form>
+        </div>
+
         {% endfor %}
 
         {% with messages = get_flashed_messages(with_categories=true) %}

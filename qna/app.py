@@ -102,7 +102,18 @@ def logout():
 def index(page):
     per_page = 2  
     questions = Question.query.paginate(page=page, per_page=per_page)
+
+    
+    user_ids = [question.user_id for question in questions.items]  
+    users = User.query.filter(User.id.in_(user_ids)).all()  
+    username_map = {user.id: user.username for user in users}  
+
+    
+    for question in questions.items:
+        question.username = username_map.get(question.user_id, "Unknown")  
+
     return render_template('qna_question.html', questions=questions)
+
 
 @app.route('/submit-question', methods=['POST'])
 def submit_question():
@@ -120,6 +131,7 @@ def submit_question():
 @app.route('/question/<int:question_id>/page/<int:page>', methods=['GET', 'POST'])
 def view_question(question_id, page):  
     question = Question.query.get_or_404(question_id)
+    answers = Answer.query.filter_by(question_id=question.id).paginate(page=request.args.get('page', 1, type=int), per_page=2)
     
     if request.method == 'POST':
         if 'logged_in' not in session:  
@@ -229,6 +241,7 @@ def upvote_answer(answer_id):
         flash('You have removed your upvote.', category='upvote')
 
     else:
+
         new_upvote = Upvote(user_id=session['user_id'], answer_id=answer.id)
         db.session.add(new_upvote)
         answer.upvotes += 1
