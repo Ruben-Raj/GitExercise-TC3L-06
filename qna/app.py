@@ -55,7 +55,7 @@ def register():
         username = request.form['username']
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash('Username already exists. Please choose a different username.')
+            flash('Username already exists. Please choose a different username.', category='login')
             return redirect(url_for('register'))
         else:
             new_user = User(
@@ -64,7 +64,7 @@ def register():
             )
             db.session.add(new_user)
             db.session.commit()
-            flash('You have successfully registered. Please login.')
+            flash('You have successfully registered. Please login.', category='login')
             return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -85,10 +85,10 @@ def login():
                 session['user_id'] = query_user.id  
                 return redirect(url_for('index'))  
             else:
-                flash('Username/email or password is incorrect.')
+                flash('Username/email or password is incorrect.', category='login')
                 return redirect(url_for('login'))
         else:
-            flash('Username/email or password is incorrect.')
+            flash('Username/email or password is incorrect.', category='login')
             return redirect(url_for('login'))
 
 @app.route('/logout')
@@ -107,7 +107,7 @@ def index(page):
 @app.route('/submit-question', methods=['POST'])
 def submit_question():
     if 'logged_in' not in session:  
-        flash('You must be logged in to submit a question.')
+        flash('You must be logged in to submit a question.', category='login')
         return redirect(url_for('login'))
     
     question_content = request.form['question']
@@ -123,7 +123,7 @@ def view_question(question_id, page):
     
     if request.method == 'POST':
         if 'logged_in' not in session:  
-            flash('You must be logged in to answer a question.')
+            flash('You must be logged in to answer a question.', category='login')
             return redirect(url_for('login'))
         
         answer_content = request.form['answer']
@@ -141,29 +141,33 @@ def view_question(question_id, page):
 @app.route('/delete-answer/<int:answer_id>', methods=['POST'])
 def delete_answer(answer_id):
     if 'logged_in' not in session:  
-        flash('You must be logged in to delete an answer.')
+        flash('You must be logged in to delete an answer.', category='login')
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
-    if answer.user_id != session['user_id']: 
+    if answer.user_id != session['user_id']:
+        flash('You are not authorized to delete this answer', category='upvote') 
         return redirect(url_for('view_question', question_id=answer.question_id))
 
     db.session.delete(answer)
     db.session.commit()
+    flash('Your answer has been deleted ', category='upvote')
     return redirect(url_for('view_question', question_id=answer.question_id))
 
 @app.route('/delete-question/<int:question_id>', methods=['POST'])
 def delete_question(question_id):
     if 'logged_in' not in session:  
-        flash('You must be logged in to delete a question.')
+        flash('You must be logged in to delete a question.', category='login')
         return redirect(url_for('login'))
 
     question = Question.query.get_or_404(question_id)
     if question.user_id != session['user_id']:
+        flash('You are not authorized to delete this question', category='qna')
         return redirect(url_for('index'))
 
     db.session.delete(question)
     db.session.commit()
+    flash('Your question has been deleted ', category='qna')
     return redirect(url_for('index'))
 
 @app.route('/search', methods=['GET'])
@@ -175,17 +179,19 @@ def search_questions():
 @app.route('/edit-question/<int:question_id>', methods=['GET', 'POST'])
 def edit_question(question_id):
     if 'logged_in' not in session:  
-        flash('You must be logged in to edit a question.')
+        flash('You must be logged in to edit a question.', category='login')
         return redirect(url_for('login'))
 
     question = Question.query.get_or_404(question_id)
     if question.user_id != session['user_id']: 
+        flash('You are not authorized to edit this question.', category='qna')
         return redirect(url_for('index'))
 
     
     if request.method == 'POST':
         question.content = request.form['question']
         db.session.commit()
+        flash('Your question has been updated.', category='qna')
         return redirect(url_for('index'))
     
     return render_template('edit_question.html', question=question)
@@ -193,21 +199,23 @@ def edit_question(question_id):
 @app.route('/edit-answer/<int:answer_id>', methods=['POST'])
 def edit_answer(answer_id):
     if 'logged_in' not in session:  
-        flash('You must be logged in to edit an answer.')
+        flash('You must be logged in to edit an answer.', category='login')
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
     if answer.user_id != session['user_id']:
+        flash('You are not authorized to edit this answer.', category='upvote')
         return redirect(url_for('view_question', question_id=answer.question_id))
     
     answer.content = request.form['answer']
     db.session.commit()
+    flash('Your answer has been updated.', category='upvote')
     return redirect(url_for('view_question', question_id=answer.question_id))
 
 @app.route('/upvote/<int:answer_id>', methods=['POST'])
 def upvote_answer(answer_id):
     if 'logged_in' not in session:  
-        flash('You must be logged in to upvote an answer.')
+        flash('You must be logged in to upvote an answer.', category='login')
         return redirect(url_for('login'))
 
     answer = Answer.query.get_or_404(answer_id)
@@ -216,7 +224,7 @@ def upvote_answer(answer_id):
     existing_upvote = Upvote.query.filter_by(user_id=session['user_id'], answer_id=answer_id).first()
 
     if existing_upvote:
-        flash('You have already upvoted this answer.')
+        flash('You have already upvoted this answer.', category='upvote')
     else:
        
         new_upvote = Upvote(user_id=session['user_id'], answer_id=answer.id)
