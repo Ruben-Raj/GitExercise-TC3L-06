@@ -4,17 +4,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///combined.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Initialize Flask-Migrate for database migrations
 
 # User Model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    bookings = db.relationship('Booking', back_populates='student')
 
     def __init__(self, username, password):
         self.username = username
@@ -27,14 +31,17 @@ class Tutor(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     available_slots = db.Column(db.String(200), nullable=False)
+    bookings = db.relationship('Booking', back_populates='tutor')
 
 # Booking Model
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_name = db.Column(db.String(100), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Associate booking with the user
     slot = db.Column(db.String(100), nullable=False)
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
-    tutor = db.relationship('Tutor', backref='bookings')
+
+    student = db.relationship('User', back_populates='bookings')
+    tutor = db.relationship('Tutor', back_populates='bookings')
 
 # Tutor Form
 class TutorForm(FlaskForm):
@@ -50,6 +57,7 @@ class BookingForm(FlaskForm):
     slot = StringField('Slot', validators=[DataRequired()])
     submit = SubmitField('Book Slot')
 
+# Routes
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -90,6 +98,7 @@ def login():
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
             session['user_id'] = user.id  # Store user ID in session
+            session['username'] = user.username  # Store username in session
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
@@ -102,6 +111,7 @@ def login():
 def logout():
     session.pop('logged_in', None)
     session.pop('user_id', None)  # Remove user ID from session
+    session.pop('username', None)  # Remove username from session
     flash('You have successfully logged out.', 'success')
     return redirect(url_for('login'))
 
@@ -109,10 +119,6 @@ def logout():
 def home():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-
-    # Retrieve the logged-in user's ID
-    user_id = session.get('user_id')
-    user = User.query.get(user_id)  # Get user object from the database
 
     search_query = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)  # Get the current page number
@@ -126,7 +132,8 @@ def home():
     else:
         tutors = Tutor.query.paginate(page=page, per_page=per_page)  # Paginate results
 
-    return render_template('home.html', tutors=tutors, user=user)
+    username = session.get('username')  # Get the username from the session
+    return render_template('home.html', tutors=tutors, username=username)
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
@@ -137,27 +144,37 @@ def tutor_info(tutor_id):
 def add_tutor():
     form = TutorForm()
     if form.validate_on_submit():
-        tutor = Tutor(name=form.name.data, phone=form.phone.data, subject=form.subject.data,
-                      available_slots=form.available_slots.data)
-        db.session.add(tutor)
-        db.session.commit()
-        flash('Tutor added/updated successfully!', 'success')
-        return redirect(url_for('home'))
+        # Check if the user is logged in to add/update tutor info
+        if session.get('logged_in'):
+            tutor = Tutor(name=form.name.data, phone=form.phone.data, subject=form.subject.data,
+                          available_slots=form.available_slots.data)
+            db.session.add(tutor)
+            db.session.commit()
+            flash('Tutor added/updated successfully!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('You need to be logged in to add/update tutor information.', 'danger')
+            return redirect(url_for('login'))
     return render_template('add_tutor.html', form=form)
 
 @app.route('/edit_tutor/<int:tutor_id>', methods=['GET', 'POST'])
 def edit_tutor(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
-    form = TutorForm(obj=tutor)
-    if form.validate_on_submit():
-        tutor.name = form.name.data
-        tutor.phone = form.phone.data
-        tutor.subject = form.subject.data
-        tutor.available_slots = form.available_slots.data
-        db.session.commit()
-        flash('Tutor updated successfully!', 'success')
+    # Check if the logged-in user is the tutor they are trying to edit
+    if session.get('logged_in') and tutor.id == session.get('user_id'):
+        form = TutorForm(obj=tutor)
+        if form.validate_on_submit():
+            tutor.name = form.name.data
+            tutor.phone = form.phone.data
+            tutor.subject = form.subject.data
+            tutor.available_slots = form.available_slots.data
+            db.session.commit()
+            flash('Tutor updated successfully!', 'success')
+            return redirect(url_for('home'))
+        return render_template('edit_tutor.html', form=form, tutor=tutor)
+    else:
+        flash('You are not authorized to edit this tutor.', 'danger')
         return redirect(url_for('home'))
-    return render_template('edit_tutor.html', form=form, tutor=tutor)
 
 @app.route('/delete_tutor/<int:tutor_id>', methods=['POST'])
 def delete_tutor(tutor_id):
@@ -177,7 +194,8 @@ def book_slot(tutor_id):
         if selected_slot in slots:
             slots.remove(selected_slot)
             tutor.available_slots = ', '.join(slots)
-            booking = Booking(student_name=form.student_name.data, slot=selected_slot, tutor_id=tutor_id)
+            # Associate booking with the logged-in user
+            booking = Booking(student_id=session['user_id'], slot=selected_slot, tutor_id=tutor_id)
             db.session.add(booking)
             db.session.commit()
             flash('Slot booked successfully!', 'success')
@@ -189,29 +207,25 @@ def book_slot(tutor_id):
 @app.route('/cancel/<int:booking_id>', methods=['POST'])
 def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
-
-    # Check if the logged-in user is the one who created the booking
-    user_id = session.get('user_id')
-    if booking.student_name != User.query.get(user_id).username:
+    # Check if the logged-in user is the one who made the booking
+    if booking.student_id == session.get('user_id'):
+        tutor = Tutor.query.get(booking.tutor_id)
+        slots = tutor.available_slots.split(',')
+        slots.append(booking.slot)
+        tutor.available_slots = ', '.join(slots)
+        db.session.delete(booking)
+        db.session.commit()
+        flash('Booking canceled successfully!', 'success')
+    else:
         flash('You are not authorized to cancel this booking.', 'danger')
-        return redirect(url_for('view_bookings'))
-
-    tutor = Tutor.query.get(booking.tutor_id)
-    slots = tutor.available_slots.split(',')
-    slots.append(booking.slot)
-    tutor.available_slots = ', '.join(slots)
-    db.session.delete(booking)
-    db.session.commit()
-    flash('Booking canceled successfully!', 'success')
     return redirect(url_for('view_bookings'))
 
 @app.route('/bookings')
 def view_bookings():
-    user_id = session.get('user_id')
-    bookings = Booking.query.filter_by(student_name=User.query.get(user_id).username).all()
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    bookings = Booking.query.filter_by(student_id=session['user_id']).all()
     return render_template('view_bookings.html', bookings=bookings)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)

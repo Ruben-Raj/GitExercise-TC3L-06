@@ -19,7 +19,6 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Student Name</th>
                         <th>Slot</th>
                         <th>Tutor</th>
                         <th>Action</th>
@@ -28,7 +27,6 @@
                 <tbody>
                     {% for booking in bookings %}
                     <tr>
-                        <td>{{ booking.student_name }}</td>
                         <td>{{ booking.slot }}</td>
                         <td>{{ booking.tutor.name }}</td>
                         <td>
