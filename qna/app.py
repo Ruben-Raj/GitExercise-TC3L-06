@@ -160,6 +160,8 @@ def delete_answer(answer_id):
     if answer.user_id != session['user_id']:
         flash('You are not authorized to delete this answer', category='upvote') 
         return redirect(url_for('view_question', question_id=answer.question_id))
+    
+    Upvote.query.filter_by(answer_id=answer_id).delete()
 
     db.session.delete(answer)
     db.session.commit()
@@ -176,7 +178,16 @@ def delete_question(question_id):
     if question.user_id != session['user_id']:
         flash('You are not authorized to delete this question', category='qna')
         return redirect(url_for('index'))
+    
+    answers = Answer.query.filter_by(question_id=question.id).all()
 
+    for answer in answers:
+        Upvote.query.filter_by(answer_id=answer.id).delete()
+
+    # Delete the answers themselves
+    for answer in answers:
+        db.session.delete(answer)
+        
     db.session.delete(question)
     db.session.commit()
     flash('Your question has been deleted ', category='qna')
