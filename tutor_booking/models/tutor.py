@@ -7,6 +7,7 @@ class Tutor(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     available_slots = db.Column(db.String(200), nullable=False)  # Storing as a string for simplicity
 
+# Booking Model
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -14,3 +15,4 @@ class Booking(db.Model):
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Link to User
     tutor = db.relationship('Tutor', backref='bookings')
+    user = db.relationship('User', backref='bookings')  # Add this line if you want to access bookings from User

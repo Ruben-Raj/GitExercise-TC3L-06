@@ -89,6 +89,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
+            session['user_id'] = user.id  # Store user ID in session
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
@@ -100,6 +101,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('user_id', None)  # Remove user ID from session
     flash('You have successfully logged out.', 'success')
     return redirect(url_for('login'))
 
@@ -107,6 +109,10 @@ def logout():
 def home():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
+
+    # Retrieve the logged-in user's ID
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)  # Get user object from the database
 
     search_query = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)  # Get the current page number
@@ -120,7 +126,7 @@ def home():
     else:
         tutors = Tutor.query.paginate(page=page, per_page=per_page)  # Paginate results
 
-    return render_template('home.html', tutors=tutors)
+    return render_template('home.html', tutors=tutors, user=user)
 
 @app.route('/tutor/<int:tutor_id>')
 def tutor_info(tutor_id):
@@ -183,6 +189,13 @@ def book_slot(tutor_id):
 @app.route('/cancel/<int:booking_id>', methods=['POST'])
 def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
+
+    # Check if the logged-in user is the one who created the booking
+    user_id = session.get('user_id')
+    if booking.student_name != User.query.get(user_id).username:
+        flash('You are not authorized to cancel this booking.', 'danger')
+        return redirect(url_for('view_bookings'))
+
     tutor = Tutor.query.get(booking.tutor_id)
     slots = tutor.available_slots.split(',')
     slots.append(booking.slot)
@@ -194,7 +207,8 @@ def cancel_booking(booking_id):
 
 @app.route('/bookings')
 def view_bookings():
-    bookings = Booking.query.all()
+    user_id = session.get('user_id')
+    bookings = Booking.query.filter_by(student_name=User.query.get(user_id).username).all()
     return render_template('view_bookings.html', bookings=bookings)
 
 if __name__ == '__main__':
