@@ -184,10 +184,10 @@ def delete_question(question_id):
     for answer in answers:
         Upvote.query.filter_by(answer_id=answer.id).delete()
 
-    # Delete the answers themselves
+    
     for answer in answers:
         db.session.delete(answer)
-        
+
     db.session.delete(question)
     db.session.commit()
     flash('Your question has been deleted ', category='qna')
