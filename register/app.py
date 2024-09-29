@@ -81,4 +81,3 @@ if __name__ == '__main__':
     db.create_all()
     app.secret_key = '\xe3\xdeN~\xed<\xb6.Wy\xe7H\x8f\xb3\xc1\x9d\x8f\x80e\xf0\xab\xd4I\xfc'
     app.run(host='127.0.0.1', port=8080)
-
