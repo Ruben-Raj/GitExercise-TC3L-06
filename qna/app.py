@@ -27,13 +27,13 @@ class Question(db.Model):
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('questions', lazy=True))
+    answers = db.relationship('Answer', backref='question', lazy=True) 
 
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
-    question = db.relationship('Question', backref=db.backref('answers', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('answers', lazy=True))
     upvotes = db.Column(db.Integer, default=0)
 
@@ -42,6 +42,7 @@ class Upvote(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     answer_id = db.Column(db.Integer, db.ForeignKey('answer.id'), nullable=False)
     db.UniqueConstraint('user_id', 'answer_id', name='unique_user_answer')
+
 
 
 
