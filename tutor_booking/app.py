@@ -135,10 +135,11 @@ def home():
     username = session.get('username')  # Get the username from the session
     return render_template('home.html', tutors=tutors, username=username)
 
-@app.route('/tutor/<int:tutor_id>')
+@app.route('/tutor_info/<int:tutor_id>')
 def tutor_info(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
-    return render_template('tutor_info.html', tutor=tutor)
+    bookings = Booking.query.filter_by(tutor_id=tutor.id).all()  # Get all bookings for this tutor
+    return render_template('tutor_info.html', tutor=tutor, bookings=bookings)
 
 @app.route('/add_tutor', methods=['GET', 'POST'])
 def add_tutor():

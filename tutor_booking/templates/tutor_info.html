@@ -25,6 +25,24 @@
             {% endfor %}
         </ul>
         <a href="{{ url_for('book_slot', tutor_id=tutor.id) }}">Book a Slot</a>
+
+        <h3>Bookings:</h3>
+        {% if bookings %}
+            <table>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Slot</th>
+                </tr>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.student.username }}</td>
+                    <td>{{ booking.slot }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No bookings available for this tutor.</p>
+        {% endif %}
     </main>
 </body>
 </html>
