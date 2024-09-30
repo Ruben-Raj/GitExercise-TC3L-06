@@ -11,7 +11,7 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///combined.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)  # Initialize Flask-Migrate for database migrations
+migrate = Migrate(app, db)  
 
 # User Model
 class User(db.Model):
@@ -36,7 +36,7 @@ class Tutor(db.Model):
 # Booking Model
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Associate booking with the user
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
     slot = db.Column(db.String(100), nullable=False)
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
 
@@ -97,8 +97,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
-            session['user_id'] = user.id  # Store user ID in session
-            session['username'] = user.username  # Store username in session
+            session['user_id'] = user.id 
+            session['username'] = user.username 
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
@@ -110,8 +110,8 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    session.pop('user_id', None)  # Remove user ID from session
-    session.pop('username', None)  # Remove username from session
+    session.pop('user_id', None) 
+    session.pop('username', None)  
     flash('You have successfully logged out.', 'success')
     return redirect(url_for('login'))
 
@@ -121,31 +121,30 @@ def home():
         return redirect(url_for('login'))
 
     search_query = request.args.get('search', '')
-    page = request.args.get('page', 1, type=int)  # Get the current page number
-    per_page = 5  # Set how many tutors to display per page
-
+    page = request.args.get('page', 1, type=int)  
+    per_page = 5 
     if search_query:
         tutors = Tutor.query.filter(
             (Tutor.name.ilike(f'%{search_query}%')) | 
             (Tutor.subject.ilike(f'%{search_query}%'))
-        ).paginate(page=page, per_page=per_page)  # Paginate results
+        ).paginate(page=page, per_page=per_page)  
     else:
-        tutors = Tutor.query.paginate(page=page, per_page=per_page)  # Paginate results
+        tutors = Tutor.query.paginate(page=page, per_page=per_page)  
 
-    username = session.get('username')  # Get the username from the session
+    username = session.get('username')  
     return render_template('home.html', tutors=tutors, username=username)
 
 @app.route('/tutor_info/<int:tutor_id>')
 def tutor_info(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
-    bookings = Booking.query.filter_by(tutor_id=tutor.id).all()  # Get all bookings for this tutor
+    bookings = Booking.query.filter_by(tutor_id=tutor.id).all() 
     return render_template('tutor_info.html', tutor=tutor, bookings=bookings)
 
 @app.route('/add_tutor', methods=['GET', 'POST'])
 def add_tutor():
     form = TutorForm()
     if form.validate_on_submit():
-        # Check if the user is logged in to add/update tutor info
+        
         if session.get('logged_in'):
             tutor = Tutor(name=form.name.data, phone=form.phone.data, subject=form.subject.data,
                           available_slots=form.available_slots.data)
@@ -161,7 +160,7 @@ def add_tutor():
 @app.route('/edit_tutor/<int:tutor_id>', methods=['GET', 'POST'])
 def edit_tutor(tutor_id):
     tutor = Tutor.query.get_or_404(tutor_id)
-    # Check if the logged-in user is the tutor they are trying to edit
+    
     if session.get('logged_in') and tutor.id == session.get('user_id'):
         form = TutorForm(obj=tutor)
         if form.validate_on_submit():
@@ -195,7 +194,7 @@ def book_slot(tutor_id):
         if selected_slot in slots:
             slots.remove(selected_slot)
             tutor.available_slots = ', '.join(slots)
-            # Associate booking with the logged-in user
+            
             booking = Booking(student_id=session['user_id'], slot=selected_slot, tutor_id=tutor_id)
             db.session.add(booking)
             db.session.commit()
@@ -208,7 +207,7 @@ def book_slot(tutor_id):
 @app.route('/cancel/<int:booking_id>', methods=['POST'])
 def cancel_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
-    # Check if the logged-in user is the one who made the booking
+   
     if booking.student_id == session.get('user_id'):
         tutor = Tutor.query.get(booking.tutor_id)
         slots = tutor.available_slots.split(',')

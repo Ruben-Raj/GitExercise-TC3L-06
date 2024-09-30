@@ -1,16 +1,15 @@
-/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #e11919; /* Dark background for contrast */
-    color: #e0e0e0; /* Light text for readability */
+    background-color: #e11919; 
+    color: #e0e0e0; 
     margin: 0;
     padding: 0;
     line-height: 1.6;
 }
 
-/* Header Styles */
+
 header {
-    background: linear-gradient(135deg, #ff6f00, #ff3d00); /* Bright orange gradient */
+    background: linear-gradient(135deg, #ff6f00, #ff3d00); 
     color: #fff;
     padding: 20px;
     text-align: center;
@@ -27,8 +26,8 @@ nav {
 }
 
 nav a {
-    color: #fff; /* White text for links */
-    background-color: #ff9800; /* Bright orange for buttons */
+    color: #fff; 
+    background-color: #ff9800; 
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
@@ -37,14 +36,14 @@ nav a {
 }
 
 nav a:hover {
-    background-color: #ff5722; /* Darker orange on hover */
+    background-color: #ff5722; 
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 /* Form Styles */
 form {
-    background-color: #1e1e1e; /* Dark gray for forms */
+    background-color: #1e1e1e; 
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -54,14 +53,14 @@ form {
 
 form p {
     margin: 10px 0;
-    color: #ffeb3b; /* Bright yellow for paragraph text */
+    color: #ffeb3b; 
 }
 
 form label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #5442bd; /* Bright yellow for labels */
+    color: #5442bd; 
 }
 
 form input,
@@ -69,26 +68,26 @@ form select,
 form button {
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #ff9800; /* Bright orange border */
+    border: 1px solid #ff9800; 
     width: 100%;
     box-sizing: border-box;
 }
 
 form input:focus,
 form select:focus {
-    border: 1px solid #ff5722; /* Bright red focus border */
+    border: 1px solid #ff5722; 
 }
 
 /* Tutor Names */
 .tutor-name {
-    color: #76ff03; /* Bright green for tutor names for contrast */
+    color: #76ff03; 
     font-weight: bold;
 }
 
 /* Buttons */
 button {
-    background-color: #ff5722; /* Bright red-orange for buttons */
-    color: #ffffff; /* White text for buttons */
+    background-color: #ff5722; 
+    color: #ffffff; 
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -97,20 +96,20 @@ button {
 }
 
 button:hover {
-    background-color: #c62828; /* Darker red-orange on hover */
+    background-color: #c62828; 
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Lists and Tables */
+
 ul {
     list-style-type: none;
     padding: 0;
 }
 
 ul li {
-    background-color: #b7b561; /* Bright yellow for list items */
-    color: #212121; /* Dark text for clarity */
+    background-color: #b7b561; 
+    color: #212121; 
     margin: 10px 0;
     padding: 15px;
     border-radius: 5px;
@@ -120,7 +119,7 @@ ul li {
 
 ul li:hover {
     transform: translateY(-2px);
-    background-color: #caea2d; /* Slightly brighter yellow on hover */
+    background-color: #caea2d; 
 }
 
 table {
@@ -134,25 +133,25 @@ table {
 table,
 th,
 td {
-    border: 1px solid #ff9800; /* Bright orange for table borders */
+    border: 1px solid #ff9800; 
 }
 
 th,
 td {
     padding: 15px;
     text-align: left;
-    color: #ffffff; /* Lighter text for table cells */
+    color: #ffffff; 
 }
 
 th {
-    background-color: #ff5722; /* Bright red-orange for header */
+    background-color: #ff5722; 
 }
 
 td {
-    background-color: #1e1e1e; /* Dark gray for clarity */
+    background-color: #1e1e1e; 
 }
 
-/* Messages */
+
 ul.flash-messages {
     padding: 10px;
     margin: 0;
@@ -165,16 +164,16 @@ ul.flash-messages li {
 }
 
 ul.flash-messages .success {
-    background-color: #c8e6c9; /* Light green for success */
-    color: #2e7d32; /* Dark green for text */
+    background-color: #c8e6c9; 
+    color: #2e7d32; 
 }
 
 ul.flash-messages .danger {
-    background-color: #f8d7da; /* Light red for danger */
-    color: #721c24; /* Dark red for text */
+    background-color: #f8d7da; 
+    color: #721c24; 
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     form {
         padding: 10px;
@@ -186,9 +185,9 @@ ul.flash-messages .danger {
     }
 }
 
-/* Unique Styles */
+
 h1, h2, h3 {
-    color: #ffeb3b; /* Bright yellow headings for consistency */
+    color: #ffeb3b; 
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -196,30 +195,30 @@ h1, h2, h3 {
 
 .container {
     padding: 20px;
-    background-color: #292929; /* Consistent dark background for container */
+    background-color: #292929; 
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .add-tutor {
-    background-color: #7467e7; /* Bright red-orange background */
-    color: #ffffff; /* White text for readability */
-    padding: 15px 20px; /* Add padding for spacing */
-    text-align: center; /* Center the text */
-    border-radius: 5px; /* Round corners */
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Add transitions */
-    cursor: pointer; /* Change cursor to pointer */
-    margin: 20px 0; /* Add margin for spacing */
+    background-color: #7467e7; 
+    color: #ffffff; 
+    padding: 15px 20px; 
+    text-align: center; 
+    border-radius: 5px; 
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; 
+    cursor: pointer; 
+    margin: 20px 0; 
 }
 
 .add-tutor a {
-    color: #ffffff; /* Ensure the link text is white */
-    text-decoration: none; /* Remove underline from link */
+    color: #ffffff; 
+    text-decoration: none; 
 }
 
 .add-tutor:hover {
-    background-color: #290ac2; /* Darker red-orange on hover */
-    transform: scale(1.05); /* Scale up on hover */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Add shadow on hover */
+    background-color: #290ac2; 
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
 }
 
